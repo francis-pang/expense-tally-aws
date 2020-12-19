@@ -1,0 +1,10 @@
+version = 1.0
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "expense-tally-read-s3-db"
+s3_bucket = "expense-tally-s3"
+s3_prefix = "expense-tally-read-s3-db"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"

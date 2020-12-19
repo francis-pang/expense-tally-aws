@@ -1,0 +1,21 @@
+<Configuration status="WARN">
+    <Appenders>
+        <Lambda name="Lambda">
+            <!--Output the following pattern of log format:-->
+            <!--Time, up to milliseconds, local time zone %d{DEFAULT_MICROS}-->
+            <!--Severity Level-->
+            <!--Fully quantified class name, with method name-->
+            <!--Line number-->
+            <!--Message-->
+            <PatternLayout>
+                <pattern>%d{dd MMM yyyy HH:mm:ss.SSS} [%-5level{lowerCase=false}] %class{-1}.%method:%line - %message{nolookups}%n</pattern>
+            </PatternLayout>
+        </Lambda>
+    </Appenders>
+    <Loggers>
+        <Root level="ERROR">
+            <AppenderRef ref="Lambda"/>
+        </Root>
+        <Logger name="expense_tally.views" level="INFO" />
+    </Loggers>
+</Configuration>

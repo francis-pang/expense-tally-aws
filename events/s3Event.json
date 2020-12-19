@@ -1,0 +1,37 @@
+{
+  "awsRegion": "us-east-1",
+  "eventName": "ObjectCreated:Put",
+  "eventSource": "aws:s3",
+  "eventTime": 1608401314099,
+  "eventVersion": "2.1",
+  "requestParameters": {
+    "sourceIPAddress": "118.189.189.218"
+  },
+  "responseElements": {
+    "xAmzId2": "Ll7QNa7ZdiAEQgQ/b5Coa/+KOdAPFkIWyYfF6B3ICjFKJvE6yR1jywShntRgPHN4LNiWLnHrDlg/wWAFZtB9KJFef7WR9yef",
+    "xAmzRequestId": "D5774B4D3A022FD3"
+  },
+  "s3": {
+    "configurationId": "3c70bcc9-1e05-4755-bee1-1b117c3b8b2f",
+    "bucket": {
+      "name": "s3-expense-tally-expense-manager-database",
+      "ownerIdentity": {
+        "principalId": "A37EW0K5SRFCQA"
+      },
+      "arn": "arn:aws:s3:::s3-expense-tally-expense-manager-database"
+    },
+    "object": {
+      "key": "personal_finance.db",
+      "size": 573440,
+      "eTag": "284f59258af40902ce7b0217f438554b",
+      "versionId": "",
+      "sequencer": "005FDE41A2509DF0D2",
+      "sizeAsLong": 573440,
+      "urlDecodedKey": "personal_finance.db"
+    },
+    "s3SchemaVersion": "1.0"
+  },
+  "userIdentity": {
+    "principalId": "AWS:AIDAIHYZCDPS2MGVGQ2M4"
+  }
+}

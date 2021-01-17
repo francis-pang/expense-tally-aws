@@ -17,6 +17,8 @@ class S3ExpnsMngrFileRequestFactoryTest {
 
   @Test
   void createRequest_positive() {
+    Mockito.when(mockS3ObjectId.getBucket()).thenReturn("test bucket");
+    Mockito.when(mockS3ObjectId.getKey()).thenReturn("test key");
     assertThat(S3ExpnsMngrFileRequestFactory.createRequest(mockS3ObjectId));
   }
 
@@ -37,7 +39,6 @@ class S3ExpnsMngrFileRequestFactoryTest {
 
   @Test
   void createRequest_noKey() {
-    Mockito.when(mockS3ObjectId.getBucket()).thenReturn("test bucket");
     assertThatThrownBy(() -> S3ExpnsMngrFileRequestFactory.createRequest(mockS3ObjectId))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("S3 Object key cannot be null/ empty.");

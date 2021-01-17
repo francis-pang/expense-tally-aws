@@ -1,4 +1,4 @@
-package expense_tally.aws.lambda.read_s3_db.log;
+package expense_tally.aws.em_change_processor.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

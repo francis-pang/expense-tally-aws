@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectId;
+import expense_tally.aws.em_change_processor.log.ObjectToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +52,6 @@ public final class S3ExpnsMngrFileRetriever {
       LOGGER.atWarn().log("s3ObjectId is null");
       throw new IllegalArgumentException("S3 Object ID cannot be null.");
     }
-    validateDownloadDestinationFile(destinationFile);
     createFile(destinationFile);
     GetObjectRequest expenseManagerS3Request = createS3Request(expenseManagerS3ObjectId);
     ObjectMetadata expenseManagerMetadata = sendS3Request(expenseManagerS3Request, destinationFile);
@@ -93,6 +93,9 @@ public final class S3ExpnsMngrFileRetriever {
   }
 
   private ObjectMetadata sendS3Request(GetObjectRequest expenseManagerS3Request, File expenseManagerFile) {
+    LOGGER.atInfo().log("Sending S3 Request. expenseManagerS3Request:{}, expenseManagerFile:{}",
+        ObjectToString.extractStringFromObject(expenseManagerS3Request),
+        ObjectToString.extractStringFromObject(expenseManagerFile));
     return amazonS3.getObject(expenseManagerS3Request, expenseManagerFile);
   }
 

@@ -16,6 +16,6 @@
         <Root level="ERROR">
             <AppenderRef ref="Lambda"/>
         </Root>
-        <Logger name="expense_tally" level="INFO" />
+        <Logger name="expense_tally" level="DEBUG" />
     </Loggers>
 </Configuration>

@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,6 +46,13 @@ class S3ExpnsMngrFileRetrieverTest {
   void create_nullAmazonS3() {
     assertThatThrownBy(() -> S3ExpnsMngrFileRetriever.create(null))
         .isInstanceOf(NullPointerException.class);
+  }
+
+  @Test
+  void test() {
+    String filePath = File.separator + "tmp" + File.separator + "foo";
+    File file = new File(filePath);
+    assertThat(file.isFile()).isTrue();
   }
 
   @Test

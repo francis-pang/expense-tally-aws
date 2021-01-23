@@ -59,6 +59,7 @@ public class DatabaseS3EventAnalyzer {
     }
     String s3ObjectKey = s3ObjectEntity.getKey();
     String s3ObjectVersionId = s3ObjectEntity.getVersionId();
+    s3ObjectVersionId = (StringUtils.isBlank(s3ObjectVersionId) ? s3ObjectVersionId : null);
     String s3BucketName = extractS3BucketName(s3Entity);
     validateS3InformationState(s3BucketName, s3ObjectKey);
     S3ObjectId s3ObjectId = new S3ObjectId(s3BucketName, s3ObjectKey, s3ObjectVersionId);

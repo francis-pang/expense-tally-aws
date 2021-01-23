@@ -14,16 +14,20 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: s3-expense-tally-expense-manager-database
+      VersioningConfiguration:
+        Status: Enabled
   ReadDatabaseFileFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: .
-      Handler: expense_tally.aws.lambda.read_s3_db.app.App::handleRequest
+      Handler: expense_tally.aws.em_change_processor.app.App::handleRequest
       Runtime: java11
       MemorySize: 1024 # Give more memory because need to read from database file
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          PARAM1: VALUE
+          expense_manager_remote_db_host_url: expense-tally.cluster-cknvvjlyuzwc.us-east-1.rds.amazonaws.com
+          expense_manager_remote_db_username: admin
+          expense_manager_remote_db_password: password
       Events:
         S3Event:
           Type: S3
@@ -35,7 +39,7 @@ Resources:
               S3Key:
                 Rules:
                   - Name: prefix      # or "suffix"
-                    Value: personal_finance.db  # The value to search for in the S3 object key names
+                    Value: personal_finance.db  # The key to search for in the S3 object key names
 
 Outputs:
   ReadDatabaseFileFunction:

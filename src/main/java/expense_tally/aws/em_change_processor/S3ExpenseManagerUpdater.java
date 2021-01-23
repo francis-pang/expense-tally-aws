@@ -10,6 +10,7 @@ import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -7,7 +7,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 20
+    Timeout: 180
 
 Resources:
   ExpenseManagerDatabase:
@@ -22,7 +22,7 @@ Resources:
       CodeUri: .
       Handler: expense_tally.aws.em_change_processor.app.App::handleRequest
       Runtime: java11
-      MemorySize: 1024 # Give more memory because need to read from database file
+      MemorySize: 512 # Give more memory because need to read from database file
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           expense_manager_remote_db_host_url: expense-tally.cluster-cknvvjlyuzwc.us-east-1.rds.amazonaws.com

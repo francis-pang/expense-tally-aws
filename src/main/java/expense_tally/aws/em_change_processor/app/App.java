@@ -59,7 +59,10 @@ public class App implements RequestHandler<S3Event, Void> {
   }
 
   private void init() throws SQLException, AppStartUpException {
+    LOGGER.atDebug().log("Initialising application");
+    LOGGER.atDebug().log("Reading application configuration.");
     AppConfiguration appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+    LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", appConfiguration);
     s3ExpenseManagerUpdater = assembleS3ExpenseManagerUpdater(appConfiguration);
   }
 
@@ -172,6 +175,7 @@ public class App implements RequestHandler<S3Event, Void> {
           .withThrowable(exception)
           .log("Unable to handle s3 event. event:{}", ObjectToString.extractStringFromObject(event));
     }
+    LOGGER.atInfo().log("Processed this S3 event: {}", ObjectToString.extractStringFromObject(event));
     return null;
   }
 }

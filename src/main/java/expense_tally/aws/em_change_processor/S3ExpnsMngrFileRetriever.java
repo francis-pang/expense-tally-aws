@@ -104,6 +104,8 @@ public final class S3ExpnsMngrFileRetriever {
       LOGGER.atWarn().log("Unable to copy database file from S3.");
       return false;
     }
+    LOGGER.atDebug().log("S3 request sent. expenseManagerObjectMetadata:{}",
+        ObjectToString.extractStringFromObject(expenseManagerObjectMetadata));
     return true;
   }
 }

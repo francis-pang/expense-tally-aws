@@ -3,6 +3,9 @@ package expense_tally.aws.em_change_processor;
 
 import expense_tally.exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.logging.log4j.Logger;
 
 import org.apache.logging.log4j.LogManager;
@@ -61,6 +64,51 @@ public class AppConfiguration {
 
   public String getDestinationDbEnvId() {
     return destinationDbEnvId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+
+    if (o == null || getClass() != o.getClass()) return false;
+
+    AppConfiguration that = (AppConfiguration) o;
+
+    return new EqualsBuilder()
+        .append(localDbFilePath, that.localDbFilePath)
+        .append(sourceDbEnvId, that.sourceDbEnvId)
+        .append(destinationDbHostUrl, that.destinationDbHostUrl)
+        .append(destinationDbName, that.destinationDbName)
+        .append(dstntnDbUsername, that.dstntnDbUsername)
+        .append(dstntnDbPassword, that.dstntnDbPassword)
+        .append(destinationDbEnvId, that.destinationDbEnvId)
+        .isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37)
+        .append(localDbFilePath)
+        .append(sourceDbEnvId)
+        .append(destinationDbHostUrl)
+        .append(destinationDbName)
+        .append(dstntnDbUsername)
+        .append(dstntnDbPassword)
+        .append(destinationDbEnvId)
+        .toHashCode();
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("localDbFilePath", localDbFilePath)
+        .append("sourceDbEnvId", sourceDbEnvId)
+        .append("destinationDbHostUrl", destinationDbHostUrl)
+        .append("destinationDbName", destinationDbName)
+        .append("dstntnDbUsername", dstntnDbUsername)
+        .append("dstntnDbPassword", "*********")
+        .append("destinationDbEnvId", destinationDbEnvId)
+        .toString();
   }
 
   public static class Builder {

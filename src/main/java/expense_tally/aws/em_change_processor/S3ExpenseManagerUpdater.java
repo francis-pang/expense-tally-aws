@@ -77,10 +77,13 @@ public class S3ExpenseManagerUpdater {
   }
 
   private Optional<S3ObjectId> getS3ObjectId(S3Event s3Event) {
+    LOGGER.atDebug().log("Analyzing S3 event. s3Event:{}", ObjectToString.extractStringFromObject(s3Event));
     return DatabaseS3EventAnalyzer.extractChangedS3ObjectId(s3Event);
   }
   
   private boolean downloadExpenseManagerFile(S3ObjectId expenseManagerS3ObjectId) throws IOException {
+    LOGGER.atDebug().log("Downloading object from S3. expenseManagerS3ObjectId:{}",
+        ObjectToString.extractStringFromObject(expenseManagerS3ObjectId));
     return s3ExpnsMngrFileRetriever.downloadFile(expenseManagerS3ObjectId, expenseManagerFile);
   }
 
@@ -91,8 +94,11 @@ public class S3ExpenseManagerUpdater {
 
   private void updateTransactionRecords(List<ExpenseManagerTransaction> expenseManagerTransactions) 
       throws IOException, SQLException {
+    LOGGER.atDebug().log("Clearing remote database table.");
     expenseUpdatable.clear();
+    LOGGER.atDebug().log("Remote database table is cleared. Inserting new expense manager transactions entries.");
     for (ExpenseManagerTransaction expenseManagerTransaction : expenseManagerTransactions) {
+      LOGGER.atTrace().log("Inserting entry.expenseManagerTransaction:{}", expenseManagerTransaction);
       expenseUpdatable.add(expenseManagerTransaction);
     }
   }

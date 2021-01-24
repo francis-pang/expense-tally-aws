@@ -42,6 +42,8 @@ public class DatabaseS3EventAnalyzer {
       LOGGER.atInfo().log("There are more than 1 S3EventNotificationRecord. size:{}",
           s3EventNotificationRecords.size());
     }
+    // We only read the first record because the AWS template has defined to read PUT object reject for the database
+    // file explicitly.
     S3EventNotificationRecord firstRecord = s3EventNotificationRecords.get(0);
     return extractS3ObjectId(firstRecord);
   }
@@ -62,6 +64,10 @@ public class DatabaseS3EventAnalyzer {
     s3ObjectVersionId = (StringUtils.isBlank(s3ObjectVersionId) ? s3ObjectVersionId : null);
     String s3BucketName = extractS3BucketName(s3Entity);
     validateS3InformationState(s3BucketName, s3ObjectKey);
+    LOGGER.atDebug().log("Creating s3ObjectId. s3BucketName:{}, s3ObjectKey:{}, s3ObjectVersionId:{}",
+        StringResolver.resolveNullableString(s3BucketName),
+        StringResolver.resolveNullableString(s3ObjectKey),
+        StringResolver.resolveNullableString(s3ObjectVersionId));
     S3ObjectId s3ObjectId = new S3ObjectId(s3BucketName, s3ObjectKey, s3ObjectVersionId);
     return Optional.of(s3ObjectId);
   }

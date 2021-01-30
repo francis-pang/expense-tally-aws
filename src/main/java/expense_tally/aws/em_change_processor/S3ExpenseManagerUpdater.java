@@ -3,14 +3,11 @@ package expense_tally.aws.em_change_processor;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.model.S3ObjectId;
 import expense_tally.aws.em_change_processor.log.ObjectToString;
-import expense_tally.exception.StringResolver;
-import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
-import expense_tally.expense_manager.transformation.ExpenseTransactionMapper;
+import expense_tally.expense_manager.transformation.ExpenseTransactionTransformer;
 import expense_tally.model.persistence.database.ExpenseReport;
 import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -89,7 +86,7 @@ public class S3ExpenseManagerUpdater {
 
   private List<ExpenseManagerTransaction> retrieveTransactionRecords() throws IOException, SQLException {
     List<ExpenseReport> expenseReports = expenseReportReadable.getExpenseTransactions();
-    return ExpenseTransactionMapper.mapExpenseReports(expenseReports);
+    return ExpenseTransactionTransformer.mapExpenseReports(expenseReports);
   }
 
   private void updateTransactionRecords(List<ExpenseManagerTransaction> expenseManagerTransactions) 

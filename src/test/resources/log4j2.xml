@@ -8,7 +8,7 @@
             <!--Line number-->
             <!--Message-->
             <PatternLayout>
-                <pattern>%d{ISO8601}{Singapore}{dd MMM yyyy HH:mm:ss.SSS} [%-5level{lowerCase=false}] %class{-1}.%method:%line - %message{nolookups}%n</pattern>
+                <pattern>%d{dd MMM yyyy HH:mm:ss.SSS} [%-5level{lowerCase=false}] %class{-1}.%method:%line - %message{nolookups}%n</pattern>
             </PatternLayout>
         </Lambda>
     </Appenders>
@@ -17,6 +17,5 @@
             <AppenderRef ref="Lambda"/>
         </Root>
         <Logger name="expense_tally" level="DEBUG" />
-        <Logger name="expense_tally.expense_manager.persistence" level="TRACE" />
     </Loggers>
 </Configuration>

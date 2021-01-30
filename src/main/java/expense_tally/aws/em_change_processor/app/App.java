@@ -4,13 +4,10 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.em_change_processor.AppConfigEnum;
-import expense_tally.aws.em_change_processor.AppConfiguration;
+import expense_tally.aws.em_change_processor.configuration.AppConfiguration;
 import expense_tally.aws.em_change_processor.AppStartUpException;
-import expense_tally.aws.em_change_processor.ConfigurationParser;
+import expense_tally.aws.em_change_processor.configuration.ConfigurationParser;
 import expense_tally.aws.em_change_processor.S3ExpenseManagerUpdater;
 import expense_tally.aws.em_change_processor.S3ExpnsMngrFileRetriever;
 import expense_tally.aws.em_change_processor.log.ObjectToString;
@@ -22,17 +19,13 @@ import expense_tally.expense_manager.persistence.database.ExpenseManagerTransact
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
 import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
 import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
-import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
 public class App implements RequestHandler<S3Event, Void> {
   private static final Logger LOGGER = LogManager.getLogger(App.class);

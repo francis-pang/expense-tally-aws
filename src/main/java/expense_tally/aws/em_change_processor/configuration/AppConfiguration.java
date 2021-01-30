@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.em_change_processor.configuration;
 
 
 import expense_tally.exception.StringResolver;

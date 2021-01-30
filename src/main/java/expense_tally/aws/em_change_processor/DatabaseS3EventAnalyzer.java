@@ -21,8 +21,8 @@ public class DatabaseS3EventAnalyzer {
 
   /**
    *
-   * @param s3Event
-   * @return the {@link S3ObjectId} mentioned in the S3 event.
+   * @param s3Event s3 put object event
+   * @return
    */
   public static Optional<S3ObjectId> extractChangedS3ObjectId(S3Event s3Event) {
     if (s3Event == null) {

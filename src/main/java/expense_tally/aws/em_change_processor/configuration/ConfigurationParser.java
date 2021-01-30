@@ -1,9 +1,9 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.em_change_processor.configuration;
 
+import expense_tally.aws.em_change_processor.AppStartUpException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
 import java.util.Optional;
 
 public class ConfigurationParser {

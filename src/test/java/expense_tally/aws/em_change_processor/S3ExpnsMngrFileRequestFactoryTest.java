@@ -1,6 +1,7 @@
 package expense_tally.aws.em_change_processor;
 
 import com.amazonaws.services.s3.model.S3ObjectId;
+import expense_tally.aws.s3.S3ExpnsMngrFileRequestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

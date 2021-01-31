@@ -2,7 +2,9 @@ package expense_tally.aws.em_change_processor;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.em_change_processor.log.ObjectToString;
+import expense_tally.aws.log.ObjectToString;
+import expense_tally.aws.s3.DatabaseS3EventAnalyzer;
+import expense_tally.aws.s3.S3ExpnsMngrFileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.transformation.ExpenseTransactionTransformer;

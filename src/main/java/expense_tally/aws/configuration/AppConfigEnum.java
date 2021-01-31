@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor.configuration;
+package expense_tally.aws.configuration;
 
 import expense_tally.exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;

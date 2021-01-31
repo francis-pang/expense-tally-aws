@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor.configuration;
+package expense_tally.aws.configuration;
 
 import expense_tally.aws.em_change_processor.AppStartUpException;
 import org.apache.logging.log4j.LogManager;

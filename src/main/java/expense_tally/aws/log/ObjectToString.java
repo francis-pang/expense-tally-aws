@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor.log;
+package expense_tally.aws.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

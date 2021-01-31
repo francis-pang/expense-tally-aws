@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws;
 
 public class AppStartUpException extends Exception {
   public AppStartUpException() {

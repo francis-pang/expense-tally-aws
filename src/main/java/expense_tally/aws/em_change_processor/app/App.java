@@ -5,29 +5,24 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import expense_tally.aws.configuration.AppConfiguration;
-import expense_tally.aws.configuration.ConfigurationParser;
-import expense_tally.aws.em_change_processor.AppStartUpException;
+import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
+import expense_tally.aws.database.SqlSessionFactory;
+import expense_tally.aws.em_change_processor.configuration.configuration.AppConfiguration;
+import expense_tally.aws.em_change_processor.configuration.configuration.ConfigurationParser;
+import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.em_change_processor.S3ExpenseManagerUpdater;
 import expense_tally.aws.log.ObjectToString;
 import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.DatabaseEnvironmentId;
-import expense_tally.expense_manager.persistence.database.DatabaseSessionBuilder;
 import expense_tally.expense_manager.persistence.database.ExpenseManagerTransactionDatabaseProxy;
 import expense_tally.expense_manager.persistence.database.ExpenseReportDatabaseReader;
-import expense_tally.expense_manager.persistence.database.mysql.MySqlConnection;
-import expense_tally.expense_manager.persistence.database.sqlite.SqLiteConnection;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -35,6 +30,7 @@ import java.sql.SQLException;
 public class App implements RequestHandler<S3Event, Void> {
   private static final Logger LOGGER = LogManager.getLogger(App.class);
   private S3ExpenseManagerUpdater s3ExpenseManagerUpdater;
+  private AppConfiguration appConfiguration;
   private static final int KNOWN_EXCEPTION_ERROR_CODE = 400;
   private static final int UNKNOWN_EXCEPTION_ERROR_CODE = 500;
 
@@ -59,99 +55,80 @@ public class App implements RequestHandler<S3Event, Void> {
   private void init() throws SQLException, AppStartUpException, IOException {
     LOGGER.atDebug().log("Initialising application");
     LOGGER.atDebug().log("Reading application configuration.");
-    AppConfiguration appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+    appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
     LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", appConfiguration);
-    s3ExpenseManagerUpdater = assembleS3ExpenseManagerUpdater(appConfiguration);
+    s3ExpenseManagerUpdater = assembleS3ExpenseManagerUpdater();
   }
 
   private AmazonS3 retrieveAmazonS3() {
     return AmazonS3ClientBuilder.defaultClient();
   }
 
-  private File assembleExpenseManagerFile(AppConfiguration appConfiguration) throws AppStartUpException {
-    final String EXPENSE_MANAGER_FILE_PATH = retrieveExpenseManagerFilePath(appConfiguration);
+  private File assembleExpenseManagerFile() throws AppStartUpException {
+    final String EXPENSE_MANAGER_FILE_PATH = retrieveExpenseManagerFilePath();
     return new File(EXPENSE_MANAGER_FILE_PATH);
   }
 
-  private ExpenseUpdatable assembleExpenseUpdatable(AppConfiguration appConfiguration) throws AppStartUpException,
+  private ExpenseUpdatable assembleExpenseUpdatable() throws AppStartUpException,
       SQLException, IOException {
-    final String AURORA_DATABASE_URL = retrieveAuroraDatabaseUrl(appConfiguration);
-    final String EXPENSE_MANAGER_DATABASE_NAME = retrieveExpenseManagerDatabaseName(appConfiguration);
-    final String AURORA_USERNAME = retrieveAuroraUsername(appConfiguration);
-    final String AURORA_PASSWORD = retrieveAuroraPassword(appConfiguration);
-    SqlSession sqlSession = constructSqlSession(DatabaseEnvironmentId.MYSQL, AURORA_DATABASE_URL,
+    final String AURORA_DATABASE_URL = retrieveAuroraDatabaseUrl();
+    final String EXPENSE_MANAGER_DATABASE_NAME = retrieveExpenseManagerDatabaseName();
+    final String AURORA_USERNAME = retrieveAuroraUsername();
+    final String AURORA_PASSWORD = retrieveAuroraPassword();
+    SqlSession sqlSession = SqlSessionFactory.constructSqlSession(DatabaseEnvironmentId.MYSQL, AURORA_DATABASE_URL,
         EXPENSE_MANAGER_DATABASE_NAME, AURORA_USERNAME, AURORA_PASSWORD);
     return new ExpenseManagerTransactionDatabaseProxy(sqlSession);
   }
 
-  private ExpenseReportReadable assembleExpenseReportReadable(AppConfiguration appConfiguration)
+  private ExpenseReportReadable assembleExpenseReportReadable()
       throws AppStartUpException, IOException, SQLException {
-    final String EXPENSE_MANAGER_FILE_PATH = retrieveExpenseManagerFilePath(appConfiguration);
-    SqlSession sqlSession = constructSqlSession(DatabaseEnvironmentId.SQLITE, EXPENSE_MANAGER_FILE_PATH, null, null,
+    final String EXPENSE_MANAGER_FILE_PATH = retrieveExpenseManagerFilePath();
+    SqlSession sqlSession = SqlSessionFactory.constructSqlSession(DatabaseEnvironmentId.SQLITE,
+        EXPENSE_MANAGER_FILE_PATH, null, null,
         null);
     return new ExpenseReportDatabaseReader(sqlSession);
   }
 
-  private SqlSession constructSqlSession(DatabaseEnvironmentId databaseEnvironmentId,
-                                         String databaseConnectionPath,
-                                         String databaseName,
-                                         String username,
-                                         String password) throws SQLException, IOException {
-    DataSource dataSource;
-    switch (databaseEnvironmentId) {
-      case MYSQL:
-        dataSource = MySqlConnection.createDataSource(databaseConnectionPath, databaseName, username, password);
-        break;
-      case SQLITE:
-        dataSource = SqLiteConnection.createDataSource(databaseConnectionPath);
-        break;
-      default:
-        throw new IllegalStateException("Unexpected value: " + databaseEnvironmentId);
-    }
-    DatabaseSessionBuilder databaseSessionBuilder = DatabaseSessionBuilder.of(new SqlSessionFactoryBuilder());
-    Environment environment = new Environment.Builder(databaseEnvironmentId.name())
-        .dataSource(dataSource)
-        .transactionFactory(new JdbcTransactionFactory())
-        .build();
-    return databaseSessionBuilder.buildSessionFactory(environment);
-  }
-
-  private S3ExpenseManagerUpdater assembleS3ExpenseManagerUpdater(AppConfiguration appConfiguration)
+  private S3ExpenseManagerUpdater assembleS3ExpenseManagerUpdater()
       throws AppStartUpException, SQLException, IOException {
     AmazonS3 amazonS3 = retrieveAmazonS3();
     S3FileRetriever s3FileRetriever = S3FileRetriever.create(amazonS3);
-    ExpenseReportReadable expenseReportReadable = assembleExpenseReportReadable(appConfiguration);
-    ExpenseUpdatable expenseUpdatable = assembleExpenseUpdatable(appConfiguration);
-    File expenseManagerFile = assembleExpenseManagerFile(appConfiguration);
+    ExpenseReportReadable expenseReportReadable = assembleExpenseReportReadable();
+    ExpenseUpdatable expenseUpdatable = assembleExpenseUpdatable();
+    File expenseManagerFile = assembleExpenseManagerFile();
     return S3ExpenseManagerUpdater.create(s3FileRetriever, expenseReportReadable,
         expenseUpdatable, expenseManagerFile);
   }
 
-  private String retrieveAuroraPassword(AppConfiguration appConfiguration) {
-    return appConfiguration.getDstntnDbPassword();
+  private String retrieveAuroraPassword() {
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    return auroraDatabaseConfiguration.getDstntnDbPassword();
   }
 
-  private String retrieveAuroraUsername(AppConfiguration appConfiguration) {
-    return appConfiguration.getDstntnDbUsername();
+  private String retrieveAuroraUsername() {
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    return auroraDatabaseConfiguration.getDstntnDbUsername();
   }
 
-  private String retrieveExpenseManagerDatabaseName(AppConfiguration appConfiguration) throws AppStartUpException {
-    String destinationDbName = appConfiguration.getDestinationDbName();
+  private String retrieveExpenseManagerDatabaseName() throws AppStartUpException {
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    String destinationDbName = auroraDatabaseConfiguration.getDestinationDbName();
     if (StringUtils.isBlank(destinationDbName)) {
       throw new AppStartUpException("Expense Manager database name cannot be blank.");
     }
     return destinationDbName;
   }
 
-  private String retrieveAuroraDatabaseUrl(AppConfiguration appConfiguration) throws AppStartUpException {
-    String destinationDbHostUrl = appConfiguration.getDestinationDbHostUrl();
+  private String retrieveAuroraDatabaseUrl() throws AppStartUpException {
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    String destinationDbHostUrl = auroraDatabaseConfiguration.getDestinationDbHostUrl();
     if (StringUtils.isBlank(destinationDbHostUrl)) {
       throw new AppStartUpException("Aurora Database URL cannot be blank.");
     }
     return destinationDbHostUrl;
   }
 
-  private String retrieveExpenseManagerFilePath(AppConfiguration appConfiguration) throws AppStartUpException {
+  private String retrieveExpenseManagerFilePath() throws AppStartUpException {
     String expenseManagerFilePath = appConfiguration.getLocalDbFilePath();
     if (StringUtils.isBlank(expenseManagerFilePath)) {
       throw new AppStartUpException("Expense Manager File Path cannot be blank.");

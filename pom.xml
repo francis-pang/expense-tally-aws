@@ -79,6 +79,16 @@
             <artifactId>expense-tally-expense-manager</artifactId>
             <version>70</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.francis-pang</groupId>
+            <artifactId>expense-tally-reconciliator</artifactId>
+            <version>70</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.francis-pang</groupId>
+            <artifactId>expense-tally-csv-parser</artifactId>
+            <version>70</version>
+        </dependency>
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

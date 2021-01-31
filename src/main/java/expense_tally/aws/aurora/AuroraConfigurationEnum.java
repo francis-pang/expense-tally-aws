@@ -1,13 +1,11 @@
-package expense_tally.aws.configuration;
+package expense_tally.aws.aurora;
 
 import expense_tally.exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
-public enum AppConfigEnum {
-  EXPENSE_MANAGER_FILE_PATH("expense_manager_local_file_path"),
-  EXPENSE_REPORT_ENVIRONMENTAL_ID("expense_manager_local_file_db_environment_id"),
+public enum AuroraConfigurationEnum {
   AURORA_DATABASE_URL("expense_manager_remote_db_host_url"),
   EXPENSE_MANAGER_DATABASE_NAME("expense_manager_remote_db_name"),
   AURORA_USERNAME("expense_manager_remote_db_username"),
@@ -17,7 +15,7 @@ public enum AppConfigEnum {
 
   private String key;
 
-  AppConfigEnum(String key) {
+  AuroraConfigurationEnum(String key) {
     if (StringUtils.isBlank(key)) {
       throw new IllegalArgumentException("key cannot be blank:" + StringResolver.resolveNullableString(key));
     }
@@ -28,13 +26,13 @@ public enum AppConfigEnum {
     return key;
   }
 
-  public static Optional<AppConfigEnum> resolve(String key) {
+  public static Optional<AuroraConfigurationEnum> resolve(String key) {
     if (StringUtils.isBlank(key)) {
       throw new IllegalArgumentException("key cannot be blank:" + StringResolver.resolveNullableString(key));
     }
-    for (AppConfigEnum appConfigEnum : values()) {
-      if (key.equals(appConfigEnum.key)) {
-        return Optional.of(appConfigEnum);
+    for (AuroraConfigurationEnum auroraConfigurationEnum : values()) {
+      if (key.equals(auroraConfigurationEnum.key)) {
+        return Optional.of(auroraConfigurationEnum);
       }
     }
     return Optional.empty();

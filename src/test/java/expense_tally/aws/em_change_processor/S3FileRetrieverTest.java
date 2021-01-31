@@ -5,8 +5,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.s3.S3ExpnsMngrFileRequestFactory;
-import expense_tally.aws.s3.S3ExpnsMngrFileRetriever;
+import expense_tally.aws.s3.S3FileRequestFactory;
+import expense_tally.aws.s3.S3FileRetriever;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
-class S3ExpnsMngrFileRetrieverTest {
+class S3FileRetrieverTest {
   @Mock
   private AmazonS3 mockAmazonS3;
 
@@ -32,17 +32,17 @@ class S3ExpnsMngrFileRetrieverTest {
   private File mockFile;
 
   @InjectMocks
-  private S3ExpnsMngrFileRetriever s3ExpnsMngrFileRetriever;
+  private S3FileRetriever s3FileRetriever;
 
   @Test
   void create_success() {
-    assertThat(S3ExpnsMngrFileRetriever.create(mockAmazonS3))
+    assertThat(S3FileRetriever.create(mockAmazonS3))
         .isNotNull();
   }
 
   @Test
   void create_nullAmazonS3() {
-    assertThatThrownBy(() -> S3ExpnsMngrFileRetriever.create(null))
+    assertThatThrownBy(() -> S3FileRetriever.create(null))
         .isInstanceOf(NullPointerException.class);
   }
 
@@ -65,13 +65,13 @@ class S3ExpnsMngrFileRetrieverTest {
     Mockito.when(mockFile.exists()).thenReturn(false);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenReturn(mockFilePath);
-      try (MockedStatic<S3ExpnsMngrFileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
-               Mockito.mockStatic(S3ExpnsMngrFileRequestFactory.class)) {
+      try (MockedStatic<S3FileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
+               Mockito.mockStatic(S3FileRequestFactory.class)) {
         GetObjectRequest mockGetObjectRequest = Mockito.mock(GetObjectRequest.class);
-        mockS3ExpnsMngrFileRequestFactory.when(() -> S3ExpnsMngrFileRequestFactory.createRequest(mockS3ObjectId))
+        mockS3ExpnsMngrFileRequestFactory.when(() -> S3FileRequestFactory.createRequest(mockS3ObjectId))
             .thenReturn(mockGetObjectRequest);
         Mockito.when(mockAmazonS3.getObject(mockGetObjectRequest, mockFile)).thenReturn(Mockito.mock(ObjectMetadata.class));
-        assertThat(s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+        assertThat(s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
             .isTrue();
       }
     }
@@ -89,13 +89,13 @@ class S3ExpnsMngrFileRetrieverTest {
     Mockito.when(mockFile.exists()).thenReturn(true);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenReturn(mockFilePath);
-      try (MockedStatic<S3ExpnsMngrFileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
-               Mockito.mockStatic(S3ExpnsMngrFileRequestFactory.class)) {
+      try (MockedStatic<S3FileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
+               Mockito.mockStatic(S3FileRequestFactory.class)) {
         GetObjectRequest mockGetObjectRequest = Mockito.mock(GetObjectRequest.class);
-        mockS3ExpnsMngrFileRequestFactory.when(() -> S3ExpnsMngrFileRequestFactory.createRequest(mockS3ObjectId))
+        mockS3ExpnsMngrFileRequestFactory.when(() -> S3FileRequestFactory.createRequest(mockS3ObjectId))
             .thenReturn(mockGetObjectRequest);
         Mockito.when(mockAmazonS3.getObject(mockGetObjectRequest, mockFile)).thenReturn(Mockito.mock(ObjectMetadata.class));
-        assertThat(s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+        assertThat(s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
             .isTrue();
       }
     }
@@ -104,7 +104,7 @@ class S3ExpnsMngrFileRetrieverTest {
   @Test
   void downloadFile_fileIsNotFile() {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    assertThatThrownBy(() -> s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+    assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Destination must be a file.");
   }
@@ -122,7 +122,7 @@ class S3ExpnsMngrFileRetrieverTest {
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenThrow(new
           SecurityException("No permission to create file."));
-      assertThatThrownBy(() -> s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+      assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
           .isInstanceOf(SecurityException.class)
           .hasMessage("No permission to create file.");
     }
@@ -130,7 +130,7 @@ class S3ExpnsMngrFileRetrieverTest {
 
   @Test
   void downloadFile_s3ObjectIdIsNull() {
-    assertThatThrownBy(() -> s3ExpnsMngrFileRetriever.downloadFile(null, mockFile))
+    assertThatThrownBy(() -> s3FileRetriever.downloadFile(null, mockFile))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("S3 Object ID cannot be null.");
   }
@@ -147,7 +147,7 @@ class S3ExpnsMngrFileRetrieverTest {
     Mockito.when(mockFile.exists()).thenReturn(true);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.delete(mockFilePath)).thenThrow(new IOException("Cannot delete file."));
-      assertThatThrownBy(() -> s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+      assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
           .isInstanceOf(IOException.class)
           .hasMessage("Cannot delete file.");
     }
@@ -165,7 +165,7 @@ class S3ExpnsMngrFileRetrieverTest {
     Mockito.when(mockFile.exists()).thenReturn(false);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenReturn(mockFilePath);
-      assertThatThrownBy(() -> s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+      assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("S3 Object key cannot be null/ empty.");
     }
@@ -183,14 +183,14 @@ class S3ExpnsMngrFileRetrieverTest {
     Mockito.when(mockFile.exists()).thenReturn(false);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenReturn(mockFilePath);
-      try (MockedStatic<S3ExpnsMngrFileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
-               Mockito.mockStatic(S3ExpnsMngrFileRequestFactory.class)) {
+      try (MockedStatic<S3FileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
+               Mockito.mockStatic(S3FileRequestFactory.class)) {
         GetObjectRequest mockGetObjectRequest = Mockito.mock(GetObjectRequest.class);
-        mockS3ExpnsMngrFileRequestFactory.when(() -> S3ExpnsMngrFileRequestFactory.createRequest(mockS3ObjectId))
+        mockS3ExpnsMngrFileRequestFactory.when(() -> S3FileRequestFactory.createRequest(mockS3ObjectId))
             .thenReturn(mockGetObjectRequest);
         Mockito.when(mockAmazonS3.getObject(mockGetObjectRequest, mockFile)).thenThrow(
             new SdkClientException("client error"));
-        assertThatThrownBy(() -> s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+        assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
             .isInstanceOf(SdkClientException.class)
             .hasMessage("client error");
       }
@@ -209,13 +209,13 @@ class S3ExpnsMngrFileRetrieverTest {
     Mockito.when(mockFile.exists()).thenReturn(false);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenReturn(mockFilePath);
-      try (MockedStatic<S3ExpnsMngrFileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
-               Mockito.mockStatic(S3ExpnsMngrFileRequestFactory.class)) {
+      try (MockedStatic<S3FileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
+               Mockito.mockStatic(S3FileRequestFactory.class)) {
         GetObjectRequest mockGetObjectRequest = Mockito.mock(GetObjectRequest.class);
-        mockS3ExpnsMngrFileRequestFactory.when(() -> S3ExpnsMngrFileRequestFactory.createRequest(mockS3ObjectId))
+        mockS3ExpnsMngrFileRequestFactory.when(() -> S3FileRequestFactory.createRequest(mockS3ObjectId))
             .thenReturn(mockGetObjectRequest);
         Mockito.when(mockAmazonS3.getObject(mockGetObjectRequest, mockFile)).thenReturn(null);
-        assertThat(s3ExpnsMngrFileRetriever.downloadFile(mockS3ObjectId, mockFile))
+        assertThat(s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
             .isFalse();
       }
     }

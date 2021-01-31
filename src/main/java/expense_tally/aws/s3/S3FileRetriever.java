@@ -17,15 +17,15 @@ import java.util.Objects;
 /**
  * This class assists to download the Expense Manager file from Amazon Simple Storage Service.
  */
-public final class S3ExpnsMngrFileRetriever {
-  private static final Logger LOGGER = LogManager.getLogger(S3ExpnsMngrFileRetriever.class);
+public final class S3FileRetriever {
+  private static final Logger LOGGER = LogManager.getLogger(S3FileRetriever.class);
   private final AmazonS3 amazonS3;
 
   /**
    * Default constructor
    * @param amazonS3 Client to interface with AWS Simple Storage Service
    */
-  private S3ExpnsMngrFileRetriever(AmazonS3 amazonS3) {
+  private S3FileRetriever(AmazonS3 amazonS3) {
     this.amazonS3 = Objects.requireNonNull(amazonS3);
   }
 
@@ -34,8 +34,8 @@ public final class S3ExpnsMngrFileRetriever {
    * @param amazonS3 Client to interface with AWS Simple Storage Service
    * @return a new instance of <i>S3ExpnsMngrFileRetriever</i> based on <i>amazonS3</i>
    */
-  public static S3ExpnsMngrFileRetriever create(AmazonS3 amazonS3) {
-    return new S3ExpnsMngrFileRetriever(amazonS3);
+  public static S3FileRetriever create(AmazonS3 amazonS3) {
+    return new S3FileRetriever(amazonS3);
   }
 
   /**
@@ -77,7 +77,7 @@ public final class S3ExpnsMngrFileRetriever {
   }
 
   private GetObjectRequest createS3Request(S3ObjectId s3ObjectId) {
-    return S3ExpnsMngrFileRequestFactory.createRequest(s3ObjectId);
+    return S3FileRequestFactory.createRequest(s3ObjectId);
   }
 
   private ObjectMetadata sendS3Request(GetObjectRequest getObjectRequest, File destinationFile) {

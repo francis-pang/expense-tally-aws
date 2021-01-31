@@ -6,11 +6,11 @@ import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import expense_tally.aws.configuration.AppConfiguration;
-import expense_tally.aws.em_change_processor.AppStartUpException;
 import expense_tally.aws.configuration.ConfigurationParser;
+import expense_tally.aws.em_change_processor.AppStartUpException;
 import expense_tally.aws.em_change_processor.S3ExpenseManagerUpdater;
-import expense_tally.aws.s3.S3ExpnsMngrFileRetriever;
 import expense_tally.aws.log.ObjectToString;
+import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.persistence.database.DatabaseEnvironmentId;
@@ -119,11 +119,11 @@ public class App implements RequestHandler<S3Event, Void> {
   private S3ExpenseManagerUpdater assembleS3ExpenseManagerUpdater(AppConfiguration appConfiguration)
       throws AppStartUpException, SQLException, IOException {
     AmazonS3 amazonS3 = retrieveAmazonS3();
-    S3ExpnsMngrFileRetriever s3ExpnsMngrFileRetriever = S3ExpnsMngrFileRetriever.create(amazonS3);
+    S3FileRetriever s3FileRetriever = S3FileRetriever.create(amazonS3);
     ExpenseReportReadable expenseReportReadable = assembleExpenseReportReadable(appConfiguration);
     ExpenseUpdatable expenseUpdatable = assembleExpenseUpdatable(appConfiguration);
     File expenseManagerFile = assembleExpenseManagerFile(appConfiguration);
-    return S3ExpenseManagerUpdater.create(s3ExpnsMngrFileRetriever, expenseReportReadable,
+    return S3ExpenseManagerUpdater.create(s3FileRetriever, expenseReportReadable,
         expenseUpdatable, expenseManagerFile);
   }
 

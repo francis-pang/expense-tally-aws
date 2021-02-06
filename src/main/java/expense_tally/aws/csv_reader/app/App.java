@@ -65,7 +65,7 @@ public class App implements RequestHandler<S3Event, Void> {
   private void init() throws AppStartUpException, IOException, SQLException {
     LOGGER.atDebug().log("Initialising application");
     LOGGER.atDebug().log("Reading application configuration.");
-    AppConfiguration appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+    appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
     LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", appConfiguration);
     S3FileRetriever s3FileRetriever = assembleS3FileRetriever();
     ExpenseReadable expenseReadable = assembleExpenseReadable();

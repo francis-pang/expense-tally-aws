@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
+import expense_tally.aws.config.ApplicationErrorCode;
 import expense_tally.aws.database.SqlSessionFactory;
 import expense_tally.aws.em_change_processor.configuration.configuration.AppConfiguration;
 import expense_tally.aws.em_change_processor.configuration.configuration.ConfigurationParser;
@@ -31,8 +32,6 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
   private static final Logger LOGGER = LogManager.getLogger(ExpenseManagerFileChangeS3EventHandler.class);
   private S3ExpenseManagerUpdater s3ExpenseManagerUpdater;
   private AppConfiguration appConfiguration;
-  private static final int KNOWN_EXCEPTION_ERROR_CODE = 400;
-  private static final int UNKNOWN_EXCEPTION_ERROR_CODE = 500;
 
   public ExpenseManagerFileChangeS3EventHandler() {
     try {
@@ -42,13 +41,13 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
           .atFatal()
           .withThrowable(exception)
           .log("Unable to initialise class.");
-      System.exit(KNOWN_EXCEPTION_ERROR_CODE);
+      System.exit(ApplicationErrorCode.KNOWN_EXCEPTION.value());
     } catch (Exception exception) {
       LOGGER
           .atFatal()
           .withThrowable(exception)
           .log("Unable to initialise class.");
-      System.exit(UNKNOWN_EXCEPTION_ERROR_CODE);
+      System.exit(ApplicationErrorCode.UNKNOWN_EXCEPTION.value());
     }
   }
 

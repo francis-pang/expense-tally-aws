@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
+import expense_tally.aws.config.ApplicationErrorCode;
 import expense_tally.aws.csv_reader.BankTransactionReader;
 import expense_tally.aws.csv_reader.configuration.AppConfiguration;
 import expense_tally.aws.csv_reader.configuration.ConfigurationParser;
@@ -30,7 +31,7 @@ public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void
   private BankTransactionReader bankTransactionReader;
   private AppConfiguration appConfiguration;
 
-  public App() {
+  public CsvFileChangeS3EventHandler() {
     try {
       init();
     } catch (AppStartUpException | IOException | SQLException exception) {
@@ -38,13 +39,13 @@ public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void
           .atFatal()
           .withThrowable(exception)
           .log("Unable to initialise class.");
-      System.exit(KNOWN_EXCEPTION_ERROR_CODE);
+      System.exit(ApplicationErrorCode.KNOWN_EXCEPTION.value());
     } catch (Exception exception) {
       LOGGER
           .atFatal()
           .withThrowable(exception)
           .log("Unable to initialise class.");
-      System.exit(UNKNOWN_EXCEPTION_ERROR_CODE);
+      System.exit(ApplicationErrorCode.UNKNOWN_EXCEPTION.value());
     }
   }
 

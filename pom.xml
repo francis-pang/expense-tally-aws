@@ -77,17 +77,17 @@
         <dependency>
             <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-expense-manager</artifactId>
-            <version>70</version>
+            <version>71-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-reconciliator</artifactId>
-            <version>70</version>
+            <version>71-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.francis-pang</groupId>
             <artifactId>expense-tally-csv-parser</artifactId>
-            <version>70</version>
+            <version>71-SNAPSHOT</version>
         </dependency>
         <!-- Testing -->
         <dependency>

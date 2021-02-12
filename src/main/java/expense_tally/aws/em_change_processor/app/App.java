@@ -75,17 +75,16 @@ public class App implements RequestHandler<S3Event, Void> {
     final String EXPENSE_MANAGER_DATABASE_NAME = retrieveExpenseManagerDatabaseName();
     final String AURORA_USERNAME = retrieveAuroraUsername();
     final String AURORA_PASSWORD = retrieveAuroraPassword();
+    final int AURORA_CONNECTION_TIMEOUT = retrieveAuroraConnectionTimeout();
     SqlSession sqlSession = SqlSessionFactory.constructSqlSession(DatabaseEnvironmentId.MYSQL, AURORA_DATABASE_URL,
-        EXPENSE_MANAGER_DATABASE_NAME, AURORA_USERNAME, AURORA_PASSWORD);
+        EXPENSE_MANAGER_DATABASE_NAME, AURORA_USERNAME, AURORA_PASSWORD, AURORA_CONNECTION_TIMEOUT);
     return new ExpenseManagerTransactionDatabaseProxy(sqlSession);
   }
 
   private ExpenseReportReadable assembleExpenseReportReadable()
       throws AppStartUpException, IOException, SQLException {
     final String EXPENSE_MANAGER_FILE_PATH = retrieveExpenseManagerFilePath();
-    SqlSession sqlSession = SqlSessionFactory.constructSqlSession(DatabaseEnvironmentId.SQLITE,
-        EXPENSE_MANAGER_FILE_PATH, null, null,
-        null);
+    SqlSession sqlSession = SqlSessionFactory.constructSqLiteSession(EXPENSE_MANAGER_FILE_PATH);
     return new ExpenseReportDatabaseReader(sqlSession);
   }
 
@@ -102,30 +101,35 @@ public class App implements RequestHandler<S3Event, Void> {
 
   private String retrieveAuroraPassword() {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
-    return auroraDatabaseConfiguration.getDstntnDbPassword();
+    return auroraDatabaseConfiguration.getPassword();
+  }
+
+  private int retrieveAuroraConnectionTimeout() {
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    return auroraDatabaseConfiguration.getConnectionTimeout();
   }
 
   private String retrieveAuroraUsername() {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
-    return auroraDatabaseConfiguration.getDstntnDbUsername();
+    return auroraDatabaseConfiguration.getUsername();
   }
 
   private String retrieveExpenseManagerDatabaseName() throws AppStartUpException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
-    String destinationDbName = auroraDatabaseConfiguration.getDestinationDbName();
-    if (StringUtils.isBlank(destinationDbName)) {
+    String databaseName = auroraDatabaseConfiguration.getDatabaseName();
+    if (StringUtils.isBlank(databaseName)) {
       throw new AppStartUpException("Expense Manager database name cannot be blank.");
     }
-    return destinationDbName;
+    return databaseName;
   }
 
   private String retrieveAuroraDatabaseUrl() throws AppStartUpException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
-    String destinationDbHostUrl = auroraDatabaseConfiguration.getDestinationDbHostUrl();
-    if (StringUtils.isBlank(destinationDbHostUrl)) {
+    String hostUrl = auroraDatabaseConfiguration.getHostUrl();
+    if (StringUtils.isBlank(hostUrl)) {
       throw new AppStartUpException("Aurora Database URL cannot be blank.");
     }
-    return destinationDbHostUrl;
+    return hostUrl;
   }
 
   private String retrieveExpenseManagerFilePath() throws AppStartUpException {

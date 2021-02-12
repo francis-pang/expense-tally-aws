@@ -1,6 +1,5 @@
 package expense_tally.aws.aurora;
 
-import expense_tally.aws.em_change_processor.configuration.configuration.AppConfiguration;
 import expense_tally.exception.StringResolver;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -8,48 +7,54 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
 import java.util.StringJoiner;
 
 public class AuroraDatabaseConfiguration {
   private static final Logger LOGGER = LogManager.getLogger(AuroraDatabaseConfiguration.class);
 
-  private final String destinationDbHostUrl;
-  private final String destinationDbName;
-  private String dstntnDbUsername;
-  private String dstntnDbPassword;
-  private final String destinationDbEnvId;
+  private final String hostUrl;
+  private final String databaseName;
+  private final String username;
+  private final String password;
+  private final String environmentId;
+  private final int connectionTimeout;
 
-  private AuroraDatabaseConfiguration(String destinationDbHostUrl,
-                                     String destinationDbName,
-                                     String dstntnDbUsername,
-                                     String dstntnDbPassword,
-                                     String destinationDbEnvId) {
-    this.destinationDbHostUrl = destinationDbHostUrl;
-    this.destinationDbName = destinationDbName;
-    this.dstntnDbUsername = dstntnDbUsername;
-    this.dstntnDbPassword = dstntnDbPassword;
-    this.destinationDbEnvId = destinationDbEnvId;
+  public AuroraDatabaseConfiguration(String hostUrl,
+                                     String databaseName,
+                                     String username,
+                                     String password,
+                                     String environmentId,
+                                     int connectionTimeout) {
+    this.hostUrl = hostUrl;
+    this.databaseName = databaseName;
+    this.username = username;
+    this.password = password;
+    this.environmentId = environmentId;
+    this.connectionTimeout = connectionTimeout;
   }
 
-  public String getDestinationDbHostUrl() {
-    return destinationDbHostUrl;
+  public String getHostUrl() {
+    return hostUrl;
   }
 
-  public String getDestinationDbName() {
-    return destinationDbName;
+  public String getDatabaseName() {
+    return databaseName;
   }
 
-  public String getDstntnDbUsername() {
-    return dstntnDbUsername;
+  public String getUsername() {
+    return username;
   }
 
-  public String getDstntnDbPassword() {
-    return dstntnDbPassword;
+  public String getPassword() {
+    return password;
   }
 
-  public String getDestinationDbEnvId() {
-    return destinationDbEnvId;
+  public String getEnvironmentId() {
+    return environmentId;
+  }
+
+  public int getConnectionTimeout() {
+    return connectionTimeout;
   }
 
   @Override
@@ -61,100 +66,116 @@ public class AuroraDatabaseConfiguration {
     AuroraDatabaseConfiguration that = (AuroraDatabaseConfiguration) o;
 
     return new EqualsBuilder()
-        .append(destinationDbHostUrl, that.destinationDbHostUrl)
-        .append(destinationDbName, that.destinationDbName)
-        .append(dstntnDbUsername, that.dstntnDbUsername)
-        .append(dstntnDbPassword, that.dstntnDbPassword)
-        .append(destinationDbEnvId, that.destinationDbEnvId)
+        .append(connectionTimeout, that.connectionTimeout)
+        .append(hostUrl, that.hostUrl)
+        .append(databaseName, that.databaseName)
+        .append(username, that.username)
+        .append(password, that.password)
+        .append(environmentId, that.environmentId)
         .isEquals();
   }
 
   @Override
   public int hashCode() {
     return new HashCodeBuilder(17, 37)
-        .append(destinationDbHostUrl)
-        .append(destinationDbName)
-        .append(dstntnDbUsername)
-        .append(dstntnDbPassword)
-        .append(destinationDbEnvId)
+        .append(hostUrl)
+        .append(databaseName)
+        .append(username)
+        .append(password)
+        .append(environmentId)
+        .append(connectionTimeout)
         .toHashCode();
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", AuroraDatabaseConfiguration.class.getSimpleName() + "[", "]")
-        .add("destinationDbHostUrl='" + destinationDbHostUrl + "'")
-        .add("destinationDbName='" + destinationDbName + "'")
-        .add("dstntnDbUsername='" + dstntnDbUsername + "'")
-        .add("dstntnDbPassword='" + "*****" + "'")
-        .add("destinationDbEnvId='" + destinationDbEnvId + "'")
+        .add("hostUrl='" + hostUrl + "'")
+        .add("databaseName='" + databaseName + "'")
+        .add("username='" + username + "'")
+        .add("password='" + "*****" + "'")
+        .add("environmentId='" + environmentId + "'")
+        .add("connectionTimeout=" + connectionTimeout)
         .toString();
   }
 
   public static class Builder {
-    private static final String DEFAULT_DESTINATION_DATABASE_NAME = "expense_manager";
-    private static final String DEFAULT_DESTINATION_DATABASE_ENVIRONMENT_ID = "mysql";
+    private static final String DEFAULT_DATABASE_NAME = "expense_manager";
+    private static final String DEFAULT_ENVIRONMENT_ID = "mysql";
+    private static final int DEFAULT_CONNECTION_TIMEOUT = 1000;
 
-    private String destinationDbHostUrl;
-    private String destinationDbName;
-    private String dstntnDbUsername;
-    private String dstntnDbPassword;
-    private String destinationDbEnvId;
+    private String hostUrl;
+    private String databaseName;
+    private String username;
+    private String password;
+    private String environmentId;
+    private int connectionTimeout;
 
-    public Builder(String destinationDbHostUrl) {
-      if (StringUtils.isBlank(destinationDbHostUrl)) {
+    public Builder(String hostUrl) {
+      if (StringUtils.isBlank(hostUrl)) {
         LOGGER.atWarn().log("destinationDatabaseHostUrl is blank:{}",
-            StringResolver.resolveNullableString(destinationDbHostUrl));
+            StringResolver.resolveNullableString(hostUrl));
         throw new IllegalArgumentException("Destination database host URL cannot be null or blank.");
       }
-      this.destinationDbHostUrl = destinationDbHostUrl;
-      this.destinationDbName = DEFAULT_DESTINATION_DATABASE_NAME;
-      this.destinationDbEnvId = DEFAULT_DESTINATION_DATABASE_ENVIRONMENT_ID;
+      this.hostUrl = hostUrl;
+      this.databaseName = DEFAULT_DATABASE_NAME;
+      this.environmentId = DEFAULT_ENVIRONMENT_ID;
+      this.connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
     }
 
-    public Builder destinationDbName(String destinationDbName) {
-      if (StringUtils.isBlank(destinationDbName)) {
-        LOGGER.atWarn().log("destinationDbName is blank:{}",
-            StringResolver.resolveNullableString(destinationDbName));
-        throw new IllegalArgumentException("Destination database name cannot be null or blank.");
+    public Builder databaseName(String databaseName) {
+      if (StringUtils.isBlank(databaseName)) {
+        LOGGER.atWarn().log("databaseName is blank:{}",
+            StringResolver.resolveNullableString(databaseName));
+        throw new IllegalArgumentException("Database name cannot be null or blank.");
       }
-      this.destinationDbName = destinationDbName;
+      this.databaseName = databaseName;
       return this;
     }
 
-    public Builder destinationDbCredential(String username, String password) {
+    public Builder credential(String username, String password) {
       if (StringUtils.isBlank(username)) {
         LOGGER.atWarn().log("username is blank:{}",
             StringResolver.resolveNullableString(username));
-        throw new IllegalArgumentException("Destination database username cannot be null or blank.");
+        throw new IllegalArgumentException("Database username cannot be null or blank.");
       }
       if (StringUtils.isBlank(password)) {
         LOGGER.atWarn().log("password is blank:{}",
             StringResolver.resolveNullableString(password));
-        throw new IllegalArgumentException("Destination database password cannot be null or blank.");
+        throw new IllegalArgumentException("Database password cannot be null or blank.");
       }
-      this.dstntnDbUsername = username;
-      this.dstntnDbPassword = password;
+      this.username = username;
+      this.password = password;
       return this;
     }
 
-    public Builder destinationDbEnvId(String destinationDbEnvId) {
-      if (StringUtils.isBlank(destinationDbEnvId)) {
-        LOGGER.atWarn().log("destinationDbEnvId is blank:{}",
-            StringResolver.resolveNullableString(destinationDbEnvId));
-        throw new IllegalArgumentException("Destination database environment ID cannot be null or blank.");
+    public Builder environmentId(String environmentId) {
+      if (StringUtils.isBlank(environmentId)) {
+        LOGGER.atWarn().log("environmentId is blank:{}",
+            StringResolver.resolveNullableString(environmentId));
+        throw new IllegalArgumentException("Database environment ID cannot be null or blank.");
       }
-      this.destinationDbEnvId = destinationDbEnvId;
+      this.environmentId = environmentId;
+      return this;
+    }
+
+    public Builder setConnectionTimeout(int connectionTimeout) {
+      if (connectionTimeout <= 0) {
+        LOGGER.atWarn().log("connectionTimeout is non-positive:{}", connectionTimeout);
+        throw new IllegalArgumentException("Connection timeout must be positive.");
+      }
+      this.connectionTimeout = connectionTimeout;
       return this;
     }
 
     public AuroraDatabaseConfiguration build() {
       return new AuroraDatabaseConfiguration(
-          destinationDbHostUrl,
-          destinationDbName,
-          dstntnDbUsername,
-          dstntnDbPassword,
-          destinationDbEnvId
+          hostUrl,
+          databaseName,
+          username,
+          password,
+          environmentId,
+          connectionTimeout
       );
     }
   }

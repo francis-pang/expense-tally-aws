@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.S3ObjectId;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.csv_reader.BankTransactionReader;
 import expense_tally.aws.csv_reader.configuration.AppConfiguration;
@@ -13,18 +12,10 @@ import expense_tally.aws.csv_reader.configuration.ConfigurationParser;
 import expense_tally.aws.database.SqlSessionFactory;
 import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.log.ObjectToString;
-import expense_tally.aws.s3.DatabaseS3EventAnalyzer;
 import expense_tally.aws.s3.S3FileRetriever;
-import expense_tally.csv.parser.CsvParser;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
 import expense_tally.expense_manager.persistence.database.DatabaseEnvironmentId;
 import expense_tally.expense_manager.persistence.database.ExpenseManagerTransactionDatabaseProxy;
-import expense_tally.expense_manager.transformation.ExpenseTransactionTransformer;
-import expense_tally.model.csv.AbstractCsvTransaction;
-import expense_tally.model.persistence.transformation.ExpenseManagerTransaction;
-import expense_tally.model.persistence.transformation.PaymentMethod;
-import expense_tally.reconciliation.DiscrepantTransaction;
-import expense_tally.reconciliation.ExpenseReconciler;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,9 +23,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class App implements RequestHandler<S3Event, Void> {
   private static final Logger LOGGER = LogManager.getLogger(expense_tally.aws.em_change_processor.app.App.class);
@@ -98,12 +86,13 @@ public class App implements RequestHandler<S3Event, Void> {
 
   private ExpenseReadable assembleExpenseReadable() throws IOException, SQLException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration = retrieveAuroraDatabaseConfiguration();
-    final String AURORA_DATABASE_URL = auroraDatabaseConfiguration.getDestinationDbHostUrl();
-    final String EXPENSE_MANAGER_DATABASE_NAME = auroraDatabaseConfiguration.getDestinationDbName();
-    final String AURORA_USERNAME = auroraDatabaseConfiguration.getDstntnDbUsername();
-    final String AURORA_PASSWORD = auroraDatabaseConfiguration.getDstntnDbPassword();
+    final String AURORA_DATABASE_URL = auroraDatabaseConfiguration.getHostUrl();
+    final String EXPENSE_MANAGER_DATABASE_NAME = auroraDatabaseConfiguration.getDatabaseName();
+    final String AURORA_USERNAME = auroraDatabaseConfiguration.getUsername();
+    final String AURORA_PASSWORD = auroraDatabaseConfiguration.getPassword();
+    final int AURORA_CONNECTION_TIMEOUT = auroraDatabaseConfiguration.getConnectionTimeout();
     SqlSession sqlSession = SqlSessionFactory.constructSqlSession(DatabaseEnvironmentId.MYSQL, AURORA_DATABASE_URL,
-        EXPENSE_MANAGER_DATABASE_NAME, AURORA_USERNAME, AURORA_PASSWORD);
+        EXPENSE_MANAGER_DATABASE_NAME, AURORA_USERNAME, AURORA_PASSWORD, AURORA_CONNECTION_TIMEOUT);
     return new ExpenseManagerTransactionDatabaseProxy(sqlSession);
   }
 

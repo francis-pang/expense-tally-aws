@@ -2,7 +2,6 @@ package expense_tally.aws.csv_reader;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.csv_reader.configuration.AppConfiguration;
 import expense_tally.aws.log.ObjectToString;
 import expense_tally.aws.s3.DatabaseS3EventAnalyzer;
 import expense_tally.aws.s3.S3FileRetriever;
@@ -52,8 +51,13 @@ public class BankTransactionReader {
           ObjectToString.extractStringFromObject(csvFile));
       return Collections.emptyList();
     }
+    LOGGER.atTrace().log("Extracting transaction from CSV file now. destinationFilePath:{}", csvFile);
     List<AbstractCsvTransaction> csvTransactions = extractCsvTransactionsFromFile(csvFile);
+    LOGGER.atDebug().log("Transactions are extracted from CSV file. csvTransactions:{} entry", csvTransactions.size());
+    LOGGER.atTrace().log("Retrieving transaction from database. expenseReadable:{}", expenseReadable);
     List<ExpenseManagerTransaction> expenseManagerTransactions = getExpnsMngrTxnsFromDatabase();
+    LOGGER.atDebug().log("Transactions is retrieved from database. expenseManagerTransactions:{} entry",
+        expenseManagerTransactions.size());
     return reconcileTransaction(csvTransactions, expenseManagerTransactions);
   }
 

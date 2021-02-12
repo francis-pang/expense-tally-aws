@@ -70,7 +70,9 @@ public class S3ExpenseManagerUpdater {
       return;
     }
     // Read database records
-    List<ExpenseManagerTransaction> expenseManagerTransactions = retrieveTransactionRecords(); 
+    List<ExpenseManagerTransaction> expenseManagerTransactions = retrieveTransactionRecords();
+    LOGGER.atDebug().log("Expense Manager Transaction is retrieved. expenseManagerTransactions {} entry.",
+        expenseManagerTransactions.size());
     // Store into remote Aurora database
     updateTransactionRecords(expenseManagerTransactions);
   }
@@ -100,5 +102,7 @@ public class S3ExpenseManagerUpdater {
       LOGGER.atTrace().log("Inserting entry.expenseManagerTransaction:{}", expenseManagerTransaction);
       expenseUpdatable.add(expenseManagerTransaction);
     }
+    LOGGER.atDebug().log("Expense manager transactions entries are inserted. expenseManagerTransactions {} entry",
+        expenseManagerTransactions.size());
   }
 }

@@ -24,10 +24,10 @@ Resources:
       MemorySize: 512 # Give more memory because need to read from database file
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          expense_manager_remote_db_host_url: expense-tally.cluster-cknvvjlyuzwc.us-east-1.rds.amazonaws.com
-          expense_manager_remote_db_username: admin
-          expense_manager_remote_db_password: password
-          expense_manager_remote_db_name: expense_tally
+          expense_manager_db_host_url: expense-tally.cluster-cknvvjlyuzwc.us-east-1.rds.amazonaws.com
+          expense_manager_db_username: admin
+          expense_manager_db_password: password
+          expense_manager_db_name: expense_tally
       Events:
         UpdateDatabaseObject:
           Type: S3
@@ -46,13 +46,13 @@ Resources:
       CodeUri: .
       Handler: expense_tally.aws.csv_reader.app.App::handleRequest
       Runtime: java11
-      MemorySize: 256 # Give more memory because need to read from database file
+      MemorySize: 384 # Give more memory because need to read from database file
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          expense_manager_remote_db_host_url: expense-tally.cluster-cknvvjlyuzwc.us-east-1.rds.amazonaws.com
-          expense_manager_remote_db_username: admin
-          expense_manager_remote_db_password: password
-          expense_manager_remote_db_name: expense_tally
+          expense_manager_db_host_url: expense-tally.cluster-cknvvjlyuzwc.us-east-1.rds.amazonaws.com
+          expense_manager_db_username: admin
+          expense_manager_db_password: password
+          expense_manager_db_name: expense_tally
       Events:
         UpdateCsvObject:
           Type: S3

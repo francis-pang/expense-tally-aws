@@ -1,16 +1,16 @@
-package expense_tally.aws.csv_reader.app;
+package expense_tally.aws.csv_reader.controller;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.csv_reader.BankTransactionReader;
 import expense_tally.aws.csv_reader.configuration.AppConfiguration;
 import expense_tally.aws.csv_reader.configuration.ConfigurationParser;
 import expense_tally.aws.database.SqlSessionFactory;
-import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.log.ObjectToString;
 import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReadable;
@@ -24,11 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class App implements RequestHandler<S3Event, Void> {
-  private static final Logger LOGGER = LogManager.getLogger(expense_tally.aws.em_change_processor.app.App.class);
-  private static final int KNOWN_EXCEPTION_ERROR_CODE = 400;
-  private static final int UNKNOWN_EXCEPTION_ERROR_CODE = 500;
-  
+public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void> {
+  private static final Logger LOGGER = LogManager.getLogger(CsvFileChangeS3EventHandler.class);
+
   private BankTransactionReader bankTransactionReader;
   private AppConfiguration appConfiguration;
 

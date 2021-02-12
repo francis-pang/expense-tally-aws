@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor.app;
+package expense_tally.aws.em_change_processor.controller;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -27,14 +27,14 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class App implements RequestHandler<S3Event, Void> {
-  private static final Logger LOGGER = LogManager.getLogger(App.class);
+public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3Event, Void> {
+  private static final Logger LOGGER = LogManager.getLogger(ExpenseManagerFileChangeS3EventHandler.class);
   private S3ExpenseManagerUpdater s3ExpenseManagerUpdater;
   private AppConfiguration appConfiguration;
   private static final int KNOWN_EXCEPTION_ERROR_CODE = 400;
   private static final int UNKNOWN_EXCEPTION_ERROR_CODE = 500;
 
-  public App() {
+  public ExpenseManagerFileChangeS3EventHandler() {
     try {
       init();
     } catch (SQLException| AppStartUpException | IOException exception) {

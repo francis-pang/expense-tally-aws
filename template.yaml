@@ -19,7 +19,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: .
-      Handler: expense_tally.aws.em_change_processor.app.App::handleRequest
+      Handler: expense_tally.aws.em_change_processor.controller.ExpenseManagerFileChangeS3EventHandler::handleRequest
       Runtime: java11
       MemorySize: 512 # Give more memory because need to read from database file
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -44,7 +44,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: .
-      Handler: expense_tally.aws.csv_reader.app.App::handleRequest
+      Handler: expense_tally.aws.csv_reader.controller.CsvFileChangeS3EventHandler::handleRequest
       Runtime: java11
       MemorySize: 384 # Give more memory because need to read from database file
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object

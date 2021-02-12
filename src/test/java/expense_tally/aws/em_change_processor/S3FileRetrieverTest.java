@@ -5,10 +5,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectId;
+import expense_tally.aws.log.ObjectToString;
 import expense_tally.aws.s3.S3FileRequestFactory;
 import expense_tally.aws.s3.S3FileRetriever;
+import org.apache.ibatis.annotations.Param;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -47,19 +50,8 @@ class S3FileRetrieverTest {
   }
 
   @Test
-  void test() {
-    String filePath = File.separator + "tmp" + File.separator + "foo";
-    File file = new File(filePath);
-    assertThat(file.isFile()).isTrue();
-  }
-
-  @Test
   void downloadFile_fileNotExist() throws IOException {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(false);
@@ -80,10 +72,6 @@ class S3FileRetrieverTest {
   @Test
   void downloadFile_fileExists() throws IOException {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(true);
@@ -102,20 +90,8 @@ class S3FileRetrieverTest {
   }
 
   @Test
-  void downloadFile_fileIsNotFile() {
-    S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessage("Destination must be a file.");
-  }
-
-  @Test
   void downloadFile_noFileWritePermission() {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(false);
@@ -138,10 +114,6 @@ class S3FileRetrieverTest {
   @Test
   void downloadFile_deleteFileFail() {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(true);
@@ -156,10 +128,6 @@ class S3FileRetrieverTest {
   @Test
   void downloadFile_createS3RequestFails() {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(false);
@@ -174,10 +142,6 @@ class S3FileRetrieverTest {
   @Test
   void downloadFile_sendS3RequestFails() {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(false);
@@ -200,23 +164,24 @@ class S3FileRetrieverTest {
   @Test
   void downloadFile_noResponse() throws IOException {
     S3ObjectId mockS3ObjectId = Mockito.mock(S3ObjectId.class);
-    Mockito.when(mockFile.isFile()).thenReturn(true);
-    File mockParentFile = Mockito.mock(File.class);
-    Mockito.when(mockFile.getParentFile()).thenReturn(mockParentFile);
-    Mockito.when(mockParentFile.exists()).thenReturn(true);
     Path mockFilePath = Mockito.mock(Path.class);
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(false);
+    GetObjectRequest mockGetObjectRequest = Mockito.mock(GetObjectRequest.class);
+    Mockito.when(mockAmazonS3.getObject(mockGetObjectRequest, mockFile)).thenReturn(null);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
       mockFiles.when(() -> Files.createFile(mockFilePath)).thenReturn(mockFilePath);
       try (MockedStatic<S3FileRequestFactory> mockS3ExpnsMngrFileRequestFactory =
                Mockito.mockStatic(S3FileRequestFactory.class)) {
-        GetObjectRequest mockGetObjectRequest = Mockito.mock(GetObjectRequest.class);
         mockS3ExpnsMngrFileRequestFactory.when(() -> S3FileRequestFactory.createRequest(mockS3ObjectId))
             .thenReturn(mockGetObjectRequest);
-        Mockito.when(mockAmazonS3.getObject(mockGetObjectRequest, mockFile)).thenReturn(null);
-        assertThat(s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
-            .isFalse();
+        try (MockedStatic<ObjectToString> mockObjectToString = Mockito.mockStatic(ObjectToString.class)) {
+          mockObjectToString.when(() -> ObjectToString.extractStringFromObject(Mockito.any(Object.class)))
+              .thenReturn("");
+          assertThat(s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
+              .isFalse();
+
+        }
       }
     }
   }

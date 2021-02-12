@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.s3;
 
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectId;
@@ -14,8 +14,8 @@ import org.apache.logging.log4j.Logger;
  *   object based on the content of the request.
  * </p>
  */
-public final class S3ExpnsMngrFileRequestFactory {
-  private static final Logger LOGGER = LogManager.getLogger(S3ExpnsMngrFileRequestFactory.class);
+public final class S3FileRequestFactory {
+  private static final Logger LOGGER = LogManager.getLogger(S3FileRequestFactory.class);
 
   /**
    * Creates a {@link GetObjectRequest} based on <i>s3ObjectId</i>

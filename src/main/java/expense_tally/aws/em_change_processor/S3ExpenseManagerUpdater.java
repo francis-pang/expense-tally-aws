@@ -2,7 +2,9 @@ package expense_tally.aws.em_change_processor;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.em_change_processor.log.ObjectToString;
+import expense_tally.aws.log.ObjectToString;
+import expense_tally.aws.s3.DatabaseS3EventAnalyzer;
+import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
 import expense_tally.expense_manager.transformation.ExpenseTransactionTransformer;
@@ -22,26 +24,26 @@ import java.util.Optional;
  */
 public class S3ExpenseManagerUpdater {
   private static final Logger LOGGER = LogManager.getLogger(S3ExpenseManagerUpdater.class);
-  private final S3ExpnsMngrFileRetriever s3ExpnsMngrFileRetriever;
+  private final S3FileRetriever s3FileRetriever;
   private final ExpenseReportReadable expenseReportReadable;
   private final ExpenseUpdatable expenseUpdatable;
   private final File expenseManagerFile;
 
-  public S3ExpenseManagerUpdater(S3ExpnsMngrFileRetriever s3ExpnsMngrFileRetriever, 
-                                 ExpenseReportReadable expenseReportReadable, 
-                                 ExpenseUpdatable expenseUpdatable, 
+  public S3ExpenseManagerUpdater(S3FileRetriever s3FileRetriever,
+                                 ExpenseReportReadable expenseReportReadable,
+                                 ExpenseUpdatable expenseUpdatable,
                                  File expenseManagerFile) {
-    this.s3ExpnsMngrFileRetriever = s3ExpnsMngrFileRetriever;
+    this.s3FileRetriever = s3FileRetriever;
     this.expenseReportReadable = expenseReportReadable;
     this.expenseUpdatable = expenseUpdatable;
     this.expenseManagerFile = expenseManagerFile;
   }
 
-  public static S3ExpenseManagerUpdater create(S3ExpnsMngrFileRetriever s3ExpnsMngrFileRetriever,
+  public static S3ExpenseManagerUpdater create(S3FileRetriever s3FileRetriever,
                                                ExpenseReportReadable expenseReportReadable,
                                                ExpenseUpdatable expenseUpdatable,
                                                File expenseManagerFile) {
-    return new S3ExpenseManagerUpdater(s3ExpnsMngrFileRetriever, expenseReportReadable, expenseUpdatable, 
+    return new S3ExpenseManagerUpdater(s3FileRetriever, expenseReportReadable, expenseUpdatable,
         expenseManagerFile);
   }
 
@@ -68,7 +70,9 @@ public class S3ExpenseManagerUpdater {
       return;
     }
     // Read database records
-    List<ExpenseManagerTransaction> expenseManagerTransactions = retrieveTransactionRecords(); 
+    List<ExpenseManagerTransaction> expenseManagerTransactions = retrieveTransactionRecords();
+    LOGGER.atDebug().log("Expense Manager Transaction is retrieved. expenseManagerTransactions {} entry.",
+        expenseManagerTransactions.size());
     // Store into remote Aurora database
     updateTransactionRecords(expenseManagerTransactions);
   }
@@ -81,7 +85,7 @@ public class S3ExpenseManagerUpdater {
   private boolean downloadExpenseManagerFile(S3ObjectId expenseManagerS3ObjectId) throws IOException {
     LOGGER.atDebug().log("Downloading object from S3. expenseManagerS3ObjectId:{}",
         ObjectToString.extractStringFromObject(expenseManagerS3ObjectId));
-    return s3ExpnsMngrFileRetriever.downloadFile(expenseManagerS3ObjectId, expenseManagerFile);
+    return s3FileRetriever.downloadFile(expenseManagerS3ObjectId, expenseManagerFile);
   }
 
   private List<ExpenseManagerTransaction> retrieveTransactionRecords() throws IOException, SQLException {
@@ -98,5 +102,7 @@ public class S3ExpenseManagerUpdater {
       LOGGER.atTrace().log("Inserting entry.expenseManagerTransaction:{}", expenseManagerTransaction);
       expenseUpdatable.add(expenseManagerTransaction);
     }
+    LOGGER.atDebug().log("Expense manager transactions entries are inserted. expenseManagerTransactions {} entry",
+        expenseManagerTransactions.size());
   }
 }

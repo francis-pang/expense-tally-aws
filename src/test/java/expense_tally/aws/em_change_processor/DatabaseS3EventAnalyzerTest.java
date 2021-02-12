@@ -3,6 +3,7 @@ package expense_tally.aws.em_change_processor;
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.s3.model.S3ObjectId;
+import expense_tally.aws.s3.DatabaseS3EventAnalyzer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

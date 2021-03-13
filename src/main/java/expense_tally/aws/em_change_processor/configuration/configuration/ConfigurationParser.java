@@ -17,7 +17,7 @@ public class ConfigurationParser {
 
   public static AppConfiguration parseSystemEnvironmentVariableConfiguration() throws AppStartUpException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration =
-        AuroraConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+        AuroraConfigurationParser.parseSystemEnvironmentVariableConfigurations();
     AppConfiguration.Builder appConfigurationBuilder = new AppConfiguration.Builder(auroraDatabaseConfiguration);
 
     Optional<String> sourceDbFilePath = parseSingleConfiguration(AppConfigEnum.EXPENSE_MANAGER_FILE_PATH.key());

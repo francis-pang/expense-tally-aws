@@ -24,6 +24,14 @@ class S3FileRequestFactoryTest {
   }
 
   @Test
+  void createRequest_versionId() {
+    Mockito.when(mockS3ObjectId.getBucket()).thenReturn("test bucket");
+    Mockito.when(mockS3ObjectId.getKey()).thenReturn("test key");
+    Mockito.when(mockS3ObjectId.getVersionId()).thenReturn("id");
+    assertThat(S3FileRequestFactory.createRequest(mockS3ObjectId));
+  }
+
+  @Test
   void createRequest_null() {
     assertThatThrownBy(() -> S3FileRequestFactory.createRequest(null))
         .isInstanceOf(IllegalArgumentException.class)

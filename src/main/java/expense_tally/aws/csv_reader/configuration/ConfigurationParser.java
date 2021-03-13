@@ -4,8 +4,6 @@ import expense_tally.aws.aurora.AuroraConfigurationParser;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.AppConfigEnum;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
@@ -15,7 +13,7 @@ public class ConfigurationParser {
 
   public static AppConfiguration parseSystemEnvironmentVariableConfiguration() throws AppStartUpException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration =
-        AuroraConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+        AuroraConfigurationParser.parseSystemEnvironmentVariableConfigurations();
 
     Optional<String> csvFilePath = parseSingleConfiguration(AppConfigEnum.CSV_FILE_PATH.key());
     return csvFilePath.map(s -> AppConfiguration.create(s, auroraDatabaseConfiguration))

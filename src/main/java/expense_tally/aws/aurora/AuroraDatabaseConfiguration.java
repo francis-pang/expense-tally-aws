@@ -19,7 +19,7 @@ public class AuroraDatabaseConfiguration {
   private final String environmentId;
   private final int connectionTimeout;
 
-  public AuroraDatabaseConfiguration(String hostUrl,
+  private AuroraDatabaseConfiguration(String hostUrl,
                                      String databaseName,
                                      String username,
                                      String password,
@@ -59,12 +59,13 @@ public class AuroraDatabaseConfiguration {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-
-    if (o == null || getClass() != o.getClass()) return false;
-
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     AuroraDatabaseConfiguration that = (AuroraDatabaseConfiguration) o;
-
     return new EqualsBuilder()
         .append(connectionTimeout, that.connectionTimeout)
         .append(hostUrl, that.hostUrl)
@@ -113,9 +114,9 @@ public class AuroraDatabaseConfiguration {
 
     public Builder(String hostUrl) {
       if (StringUtils.isBlank(hostUrl)) {
-        LOGGER.atWarn().log("destinationDatabaseHostUrl is blank:{}",
+        LOGGER.atWarn().log("DatabaseHostUrl is blank:{}",
             StringResolver.resolveNullableString(hostUrl));
-        throw new IllegalArgumentException("Destination database host URL cannot be null or blank.");
+        throw new IllegalArgumentException("Database host URL cannot be null or blank.");
       }
       this.hostUrl = hostUrl;
       this.databaseName = DEFAULT_DATABASE_NAME;
@@ -159,7 +160,7 @@ public class AuroraDatabaseConfiguration {
       return this;
     }
 
-    public Builder setConnectionTimeout(int connectionTimeout) {
+    public Builder connectionTimeout(int connectionTimeout) {
       if (connectionTimeout <= 0) {
         LOGGER.atWarn().log("connectionTimeout is non-positive:{}", connectionTimeout);
         throw new IllegalArgumentException("Connection timeout must be positive.");

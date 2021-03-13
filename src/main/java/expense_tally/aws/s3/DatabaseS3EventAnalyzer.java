@@ -20,9 +20,9 @@ public class DatabaseS3EventAnalyzer {
   private static final Logger LOGGER = LogManager.getLogger(DatabaseS3EventAnalyzer.class);
 
   /**
-   *
+   * Returns constructed {@link S3ObjectId} from <i>s3Event</i>. Otherwise, returns empty Optional.
    * @param s3Event s3 put object event
-   * @return
+   * @return constructed {@link S3ObjectId} from <i>s3Event</i>. Otherwise, returns empty Optional.
    */
   public static Optional<S3ObjectId> extractChangedS3ObjectId(S3Event s3Event) {
     if (s3Event == null) {
@@ -68,6 +68,9 @@ public class DatabaseS3EventAnalyzer {
         StringResolver.resolveNullableString(s3BucketName),
         StringResolver.resolveNullableString(s3ObjectKey),
         StringResolver.resolveNullableString(s3ObjectVersionId));
+    if (StringUtils.isBlank(s3BucketName) && StringUtils.isBlank(s3ObjectKey)) {
+      return Optional.empty();
+    }
     S3ObjectId s3ObjectId = new S3ObjectId(s3BucketName, s3ObjectKey, s3ObjectVersionId);
     return Optional.of(s3ObjectId);
   }

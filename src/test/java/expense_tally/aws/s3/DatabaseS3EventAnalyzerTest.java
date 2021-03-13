@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.s3;
 
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;

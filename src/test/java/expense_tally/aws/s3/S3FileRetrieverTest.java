@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.s3;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -118,9 +118,9 @@ class S3FileRetrieverTest {
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(true);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
-      mockFiles.when(() -> Files.delete(mockFilePath)).thenThrow(new IOException("Cannot delete file."));
+      mockFiles.when(() -> Files.delete(mockFilePath)).thenThrow(new SecurityException("Cannot delete file."));
       assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
-          .isInstanceOf(IOException.class)
+          .isInstanceOf(SecurityException.class)
           .hasMessage("Cannot delete file.");
     }
   }

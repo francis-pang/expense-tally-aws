@@ -20,6 +20,12 @@ public class DatabaseS3EventAnalyzer {
   private static final Logger LOGGER = LogManager.getLogger(DatabaseS3EventAnalyzer.class);
 
   /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
+  private DatabaseS3EventAnalyzer() {
+  }
+
+  /**
    * Returns constructed {@link S3ObjectId} from <i>s3Event</i>. Otherwise, returns empty Optional.
    * @param s3Event s3 put object event
    * @return constructed {@link S3ObjectId} from <i>s3Event</i>. Otherwise, returns empty Optional.

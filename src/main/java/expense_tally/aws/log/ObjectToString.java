@@ -10,8 +10,10 @@ public class ObjectToString {
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private static final Logger LOGGER = LogManager.getLogger(ObjectToString.class);
 
-  public ObjectToString() {
-    objectMapper.registerModule(new JodaModule());
+  /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
+  private ObjectToString() {
   }
 
   public static String extractStringFromObject(Object object) {

@@ -16,6 +16,13 @@ import java.sql.SQLException;
 
 public final class SqlSessionFactory {
   private static final int DEFAULT_SQLITE_CONNECTION_TIMEOUT = 1000;
+
+  /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
+  private SqlSessionFactory() {
+  }
+
   /**
    * Returns a {@link SqlSession} based on the provided parameters
    * @param databaseConnectionPath hostname of the database connection. Port is not needed, default to be 3006.

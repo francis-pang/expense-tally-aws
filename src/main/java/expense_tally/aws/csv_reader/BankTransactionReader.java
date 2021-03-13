@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class BankTransactionReader {
-  private static Logger LOGGER = LogManager.getLogger(BankTransactionReader.class);
+  private static final Logger LOGGER = LogManager.getLogger(BankTransactionReader.class);
 
   private final S3FileRetriever s3FileRetriever;
   private final ExpenseReadable expenseReadable;

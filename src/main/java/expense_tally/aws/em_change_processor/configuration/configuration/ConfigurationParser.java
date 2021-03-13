@@ -10,8 +10,10 @@ import org.apache.logging.log4j.Logger;
 import java.util.Optional;
 
 public class ConfigurationParser {
-  private static final Logger LOGGER = LogManager.getLogger(ConfigurationParser.class);
 
+  /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
   private ConfigurationParser() {
   }
 

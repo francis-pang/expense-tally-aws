@@ -18,6 +18,12 @@ public final class S3FileRequestFactory {
   private static final Logger LOGGER = LogManager.getLogger(S3FileRequestFactory.class);
 
   /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
+  private S3FileRequestFactory() {
+  }
+
+  /**
    * Creates a {@link GetObjectRequest} based on <i>s3ObjectId</i>
    * @param s3ObjectId An Immutable S3 object identifier. Used to uniquely identify an S3 object.
    * @return a {@link GetObjectRequest} based on <i>s3ObjectId</i>

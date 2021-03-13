@@ -8,6 +8,10 @@ import expense_tally.aws.AppConfigEnum;
 import java.util.Optional;
 
 public class ConfigurationParser {
+
+  /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
   private ConfigurationParser() {
   }
 

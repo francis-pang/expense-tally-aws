@@ -10,7 +10,6 @@ import java.io.File;
 import java.util.StringJoiner;
 
 public class AppConfiguration {
-  private static final Logger LOGGER = LogManager.getLogger(AppConfiguration.class);
   private static final String DEFAULT_CSV_FILE_PATH = "/tmp/transaction.csv";
 
   private final File csvFile;

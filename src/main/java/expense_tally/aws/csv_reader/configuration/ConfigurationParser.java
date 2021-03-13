@@ -1,9 +1,9 @@
 package expense_tally.aws.csv_reader.configuration;
 
+import expense_tally.aws.AppConfigEnum;
+import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.aurora.AuroraConfigurationParser;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
-import expense_tally.aws.AppStartUpException;
-import expense_tally.aws.AppConfigEnum;
 
 import java.util.Optional;
 

@@ -3,8 +3,6 @@ package expense_tally.aws.csv_reader.configuration;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.StringJoiner;

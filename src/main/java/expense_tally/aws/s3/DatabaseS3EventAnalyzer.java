@@ -29,6 +29,7 @@ public class DatabaseS3EventAnalyzer {
    * Returns constructed {@link S3ObjectId} from <i>s3Event</i>. Otherwise, returns empty Optional.
    * @param s3Event s3 put object event
    * @return constructed {@link S3ObjectId} from <i>s3Event</i>. Otherwise, returns empty Optional.
+   * @throws S3IllegalStatusException if the information inside the s3Event is in an illegal state
    */
   public static Optional<S3ObjectId> extractChangedS3ObjectId(S3Event s3Event) {
     if (s3Event == null) {

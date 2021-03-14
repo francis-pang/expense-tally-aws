@@ -47,7 +47,7 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
           .atFatal()
           .withThrowable(exception)
           .log("Unable to initialise class.");
-      System.exit(ApplicationErrorCode.UNKNOWN_EXCEPTION.value());
+      throw exception;
     }
   }
 
@@ -87,8 +87,8 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
     return new ExpenseReportDatabaseReader(sqlSession);
   }
 
-  private S3ExpenseManagerUpdater assembleS3ExpenseManagerUpdater()
-      throws AppStartUpException, SQLException, IOException {
+  private S3ExpenseManagerUpdater assembleS3ExpenseManagerUpdater() throws AppStartUpException, SQLException,
+      IOException {
     AmazonS3 amazonS3 = retrieveAmazonS3();
     S3FileRetriever s3FileRetriever = S3FileRetriever.create(amazonS3);
     ExpenseReportReadable expenseReportReadable = assembleExpenseReportReadable();
@@ -140,19 +140,20 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
   }
 
   @Override
-  public Void handleRequest(S3Event event, Context context) {
-    LOGGER.atInfo().log("Received a new S3 event: {}", ObjectToString.extractStringFromObject(event));
+  public Void handleRequest(S3Event emFileChangeEvent, Context context) {
+    LOGGER.atInfo().log("Received a new S3 event: {}", ObjectToString.extractStringFromObject(emFileChangeEvent));
     // Since we have already put a restriction on the SAM template on the database name, there is no need to check
     // for the file name anymore, we can safely assume that all the S3 event is meant what we need to handle.
     try {
-      s3ExpenseManagerUpdater.updateExpenseManager(event);
+      s3ExpenseManagerUpdater.updateExpenseManager(emFileChangeEvent);
     } catch (Exception exception) {
       LOGGER
           .atError()
           .withThrowable(exception)
-          .log("Unable to handle s3 event. event:{}", ObjectToString.extractStringFromObject(event));
+          .log("Unable to handle s3 event. event:{}", ObjectToString.extractStringFromObject(emFileChangeEvent));
+      return null;
     }
-    LOGGER.atInfo().log("Processed this S3 event: {}", ObjectToString.extractStringFromObject(event));
+    LOGGER.atInfo().log("Processed this S3 event: {}", ObjectToString.extractStringFromObject(emFileChangeEvent));
     return null;
   }
 }

@@ -68,18 +68,8 @@ public class DatabaseS3EventAnalyzer {
     }
     String s3ObjectKey = s3ObjectEntity.getKey();
     String s3ObjectVersionId = s3ObjectEntity.getVersionId();
-    s3ObjectVersionId = (StringUtils.isBlank(s3ObjectVersionId) ? s3ObjectVersionId : null);
     String s3BucketName = extractS3BucketName(s3Entity);
-    validateS3InformationState(s3BucketName, s3ObjectKey);
-    LOGGER.atDebug().log("Creating s3ObjectId. s3BucketName:{}, s3ObjectKey:{}, s3ObjectVersionId:{}",
-        StringResolver.resolveNullableString(s3BucketName),
-        StringResolver.resolveNullableString(s3ObjectKey),
-        StringResolver.resolveNullableString(s3ObjectVersionId));
-    if (StringUtils.isBlank(s3BucketName) && StringUtils.isBlank(s3ObjectKey)) {
-      return Optional.empty();
-    }
-    S3ObjectId s3ObjectId = new S3ObjectId(s3BucketName, s3ObjectKey, s3ObjectVersionId);
-    return Optional.of(s3ObjectId);
+    return createS3ObjectId(s3ObjectKey, s3ObjectVersionId, s3BucketName);
   }
 
   private static String extractS3BucketName(S3Entity s3Entity) {
@@ -91,15 +81,23 @@ public class DatabaseS3EventAnalyzer {
     return s3BucketEntity.getName();
   }
 
-  private static void validateS3InformationState(String s3BucketName, String s3ObjectKey) {
-    boolean isS3KeyBlank = StringUtils.isBlank(s3ObjectKey);
-    boolean isS3BucketNameBlank = StringUtils.isBlank(s3BucketName);
-    if ((isS3BucketNameBlank && !isS3KeyBlank) ||
-        (!isS3BucketNameBlank && isS3KeyBlank)) {
+  private static Optional<S3ObjectId> createS3ObjectId(String key, String versionId, String bucketName) {
+    LOGGER.atDebug().log("Creating s3ObjectId. bucketName:{}, key:{}, versionId:{}",
+        StringResolver.resolveNullableString(bucketName),
+        StringResolver.resolveNullableString(key),
+        StringResolver.resolveNullableString(bucketName));
+    boolean isKeyBlank = StringUtils.isBlank(key);
+    boolean isBucketNameBlank = StringUtils.isBlank(bucketName);
+    if (isKeyBlank && isBucketNameBlank) {
+      return Optional.empty();
+    } else if (isBucketNameBlank ^ isKeyBlank) {
       LOGGER.atError().log("Only either of s3ObjectKey or s3BucketName is blank. s3ObjectKey:{}; s3BucketName:{}",
-          StringResolver.resolveNullableString(s3ObjectKey),
-          StringResolver.resolveNullableString(s3BucketName));
+          StringResolver.resolveNullableString(key),
+          StringResolver.resolveNullableString(bucketName));
       throw new S3IllegalStatusException("S3 bucket name and object key need to be present or absent together.");
     }
+    String trimmedVersionId = (StringUtils.isBlank(versionId) ? versionId : null);
+    S3ObjectId s3ObjectId = new S3ObjectId(bucketName, key, trimmedVersionId);
+    return Optional.of(s3ObjectId);
   }
 }

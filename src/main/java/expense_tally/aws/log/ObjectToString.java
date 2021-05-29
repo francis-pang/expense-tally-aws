@@ -21,7 +21,6 @@ public class ObjectToString {
     try {
       return objectMapper.writeValueAsString(object);
     } catch (JsonProcessingException jsonProcessingException) {
-      jsonProcessingException.printStackTrace();
       LOGGER
           .atWarn()
           .withThrowable(jsonProcessingException)

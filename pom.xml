@@ -11,7 +11,6 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.projectKey>francis-pang_expense-tally-aws</sonar.projectKey>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
-    <sonar.login>f3e43ff4f0692fcd97fc41da1a7f890c79a86b5b</sonar.login>
     <sonar.organization>boyshawn-github</sonar.organization>
     <maven.developmentVersion>0-SNAPSHOT</maven.developmentVersion>
     <!--Prevent "File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!"

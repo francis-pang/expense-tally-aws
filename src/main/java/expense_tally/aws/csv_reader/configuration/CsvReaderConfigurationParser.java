@@ -7,21 +7,21 @@ import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 
 import java.util.Optional;
 
-public class ConfigurationParser {
+public class CsvReaderConfigurationParser {
 
   /**
    * Make implicit constructor private as there is no need to initialise class
    */
-  private ConfigurationParser() {
+  private CsvReaderConfigurationParser() {
   }
 
-  public static AppConfiguration parseSystemEnvironmentVariableConfiguration() throws AppStartUpException {
+  public static CsvReaderConfiguration parseSystemEnvironmentVariableConfiguration() throws AppStartUpException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration =
         AuroraConfigurationParser.parseSystemEnvironmentVariableConfigurations();
 
     Optional<String> csvFilePath = parseSingleConfiguration(AppConfigEnum.CSV_FILE_PATH.key());
-    return csvFilePath.map(s -> AppConfiguration.create(s, auroraDatabaseConfiguration))
-        .orElseGet(() -> AppConfiguration.create(auroraDatabaseConfiguration));
+    return csvFilePath.map(s -> CsvReaderConfiguration.create(s, auroraDatabaseConfiguration))
+        .orElseGet(() -> CsvReaderConfiguration.create(auroraDatabaseConfiguration));
   }
 
   private static Optional<String> parseSingleConfiguration(String keyName) {

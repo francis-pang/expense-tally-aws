@@ -16,9 +16,16 @@ import java.sql.SQLException;
 
 public final class SqlSessionFactory {
   private static final int DEFAULT_SQLITE_CONNECTION_TIMEOUT = 1000;
+
+  /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
+  private SqlSessionFactory() {
+  }
+
   /**
    * Returns a {@link SqlSession} based on the provided parameters
-   * @param databaseConnectionPath hostname of the database connection. Port is not needed, default to be 3006.
+   * @param databaseConnectionPath file path of the database connection. Port is not needed, defaulted to be 3006.
    * @return a {@link SqlSession} based on the provided parameters
    * @throws SQLException if database access error occurs
    * @throws IOException if there is issue to read the myBatis configuration resource
@@ -31,7 +38,8 @@ public final class SqlSessionFactory {
   /**
    * Returns a {@link SqlSession} based on the provided parameters
    * @param databaseEnvironmentId environment ID for declaration of a SqlSession environment.
-   * @param databaseConnectionPath hostname of the database connection. Port is not needed, default to be 3006.
+   * @param databaseConnectionPath path of the database connection, without the protocol. Port is not needed, default to
+   *                              be 3006.
    * @param databaseName name of the database to be connected
    * @param username username to login to database server. This needs to be provided together with password.
    * @param password password to login to database server. This needs to be provided together with username.
@@ -40,6 +48,7 @@ public final class SqlSessionFactory {
    * @return a {@link SqlSession} based on the provided parameters
    * @throws SQLException if database access error occurs
    * @throws IOException if there is issue to read the myBatis configuration resource
+   * @throws IllegalArgumentException if the connection URL is blank
    */
   public static SqlSession constructSqlSession(DatabaseEnvironmentId databaseEnvironmentId,
                                                String databaseConnectionPath,
@@ -59,13 +68,13 @@ public final class SqlSessionFactory {
       default:
         throw new IllegalStateException("Unexpected value: " + databaseEnvironmentId);
     }
-    DatabaseSessionBuilder databaseSessionBuilder = DatabaseSessionBuilder.of(new SqlSessionFactoryBuilder());
+    SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
+    JdbcTransactionFactory jdbcTransactionFactory = new JdbcTransactionFactory();
+    DatabaseSessionBuilder databaseSessionBuilder = DatabaseSessionBuilder.of(sqlSessionFactoryBuilder);
     Environment environment = new Environment.Builder(databaseEnvironmentId.name())
         .dataSource(dataSource)
-        .transactionFactory(new JdbcTransactionFactory())
+        .transactionFactory(jdbcTransactionFactory)
         .build();
     return databaseSessionBuilder.buildSessionFactory(environment);
   }
-
-
 }

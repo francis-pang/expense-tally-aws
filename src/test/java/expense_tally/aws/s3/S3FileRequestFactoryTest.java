@@ -1,7 +1,6 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.s3;
 
 import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.s3.S3FileRequestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -20,7 +19,7 @@ class S3FileRequestFactoryTest {
   void createRequest_positive() {
     Mockito.when(mockS3ObjectId.getBucket()).thenReturn("test bucket");
     Mockito.when(mockS3ObjectId.getKey()).thenReturn("test key");
-    assertThat(S3FileRequestFactory.createRequest(mockS3ObjectId));
+    assertThat(S3FileRequestFactory.createRequest(mockS3ObjectId)).isNotNull();
   }
 
   @Test
@@ -28,7 +27,7 @@ class S3FileRequestFactoryTest {
     Mockito.when(mockS3ObjectId.getBucket()).thenReturn("test bucket");
     Mockito.when(mockS3ObjectId.getKey()).thenReturn("test key");
     Mockito.when(mockS3ObjectId.getVersionId()).thenReturn("id");
-    assertThat(S3FileRequestFactory.createRequest(mockS3ObjectId));
+    assertThat(S3FileRequestFactory.createRequest(mockS3ObjectId)).isNotNull();
   }
 
   @Test

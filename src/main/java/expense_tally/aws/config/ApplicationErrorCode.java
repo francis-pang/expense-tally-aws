@@ -1,7 +1,5 @@
 package expense_tally.aws.config;
 
-import org.apache.ibatis.annotations.Param;
-
 import java.util.Optional;
 
 public enum ApplicationErrorCode {

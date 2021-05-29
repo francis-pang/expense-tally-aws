@@ -1,4 +1,4 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.s3;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -6,12 +6,8 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectId;
 import expense_tally.aws.log.ObjectToString;
-import expense_tally.aws.s3.S3FileRequestFactory;
-import expense_tally.aws.s3.S3FileRetriever;
-import org.apache.ibatis.annotations.Param;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.StringUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -118,9 +114,9 @@ class S3FileRetrieverTest {
     Mockito.when(mockFile.toPath()).thenReturn(mockFilePath);
     Mockito.when(mockFile.exists()).thenReturn(true);
     try (MockedStatic<Files> mockFiles = Mockito.mockStatic(Files.class)) {
-      mockFiles.when(() -> Files.delete(mockFilePath)).thenThrow(new IOException("Cannot delete file."));
+      mockFiles.when(() -> Files.delete(mockFilePath)).thenThrow(new SecurityException("Cannot delete file."));
       assertThatThrownBy(() -> s3FileRetriever.downloadFile(mockS3ObjectId, mockFile))
-          .isInstanceOf(IOException.class)
+          .isInstanceOf(SecurityException.class)
           .hasMessage("Cannot delete file.");
     }
   }

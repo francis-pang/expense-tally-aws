@@ -10,6 +10,12 @@ package expense_tally.aws.config;
  */
 public class SystemProxy {
   /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
+  private SystemProxy() {
+  }
+
+  /**
    * Gets the value of the specified environment variable.
    * @param environmentVariableName
    * @return the string value of the variable, or null if the variable is not defined in the system environment

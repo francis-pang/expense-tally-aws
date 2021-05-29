@@ -1,11 +1,8 @@
-package expense_tally.aws.em_change_processor;
+package expense_tally.aws.s3;
 
 
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
-import com.amazonaws.services.s3.model.S3ObjectId;
-import expense_tally.aws.s3.DatabaseS3EventAnalyzer;
-import expense_tally.aws.s3.S3IllegalStatusException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

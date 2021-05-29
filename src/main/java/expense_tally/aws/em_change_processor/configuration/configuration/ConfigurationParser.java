@@ -1,17 +1,17 @@
 package expense_tally.aws.em_change_processor.configuration.configuration;
 
 import expense_tally.aws.AppConfigEnum;
+import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.aurora.AuroraConfigurationParser;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
-import expense_tally.aws.AppStartUpException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
 public class ConfigurationParser {
-  private static final Logger LOGGER = LogManager.getLogger(ConfigurationParser.class);
 
+  /**
+   * Make implicit constructor private as there is no need to initialise class
+   */
   private ConfigurationParser() {
   }
 

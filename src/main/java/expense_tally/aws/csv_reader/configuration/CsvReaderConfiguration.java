@@ -7,13 +7,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.io.File;
 import java.util.StringJoiner;
 
-public class AppConfiguration {
+public class CsvReaderConfiguration {
   private static final String DEFAULT_CSV_FILE_PATH = "/tmp/transaction.csv";
 
   private final File csvFile;
   private final AuroraDatabaseConfiguration auroraDatabaseConfiguration;
 
-  private AppConfiguration(File csvFile, AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
+  private CsvReaderConfiguration(File csvFile, AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
     this.csvFile = csvFile;
     this.auroraDatabaseConfiguration = auroraDatabaseConfiguration;
   }
@@ -26,15 +26,15 @@ public class AppConfiguration {
     return auroraDatabaseConfiguration;
   }
 
-  public static AppConfiguration create(AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
+  public static CsvReaderConfiguration create(AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
     File file = new File(DEFAULT_CSV_FILE_PATH);
-    return new AppConfiguration(file, auroraDatabaseConfiguration);
+    return new CsvReaderConfiguration(file, auroraDatabaseConfiguration);
   }
 
-  public static AppConfiguration create(String csvFilePath,
-                                        AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
+  public static CsvReaderConfiguration create(String csvFilePath,
+                                              AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
     File file = new File(csvFilePath);
-    return new AppConfiguration(file, auroraDatabaseConfiguration);
+    return new CsvReaderConfiguration(file, auroraDatabaseConfiguration);
   }
 
   @Override
@@ -43,7 +43,7 @@ public class AppConfiguration {
 
     if (o == null || getClass() != o.getClass()) return false;
 
-    AppConfiguration that = (AppConfiguration) o;
+    CsvReaderConfiguration that = (CsvReaderConfiguration) o;
 
     return new EqualsBuilder()
         .append(csvFile, that.csvFile)
@@ -61,7 +61,7 @@ public class AppConfiguration {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", AppConfiguration.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", CsvReaderConfiguration.class.getSimpleName() + "[", "]")
         .add("csvFile=" + csvFile)
         .add("auroraDatabaseConfiguration=" + auroraDatabaseConfiguration)
         .toString();

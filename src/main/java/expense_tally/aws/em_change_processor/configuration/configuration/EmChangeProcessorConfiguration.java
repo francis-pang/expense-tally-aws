@@ -13,16 +13,16 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 
-public class AppConfiguration {
-  private static final Logger LOGGER = LogManager.getLogger(AppConfiguration.class);
+public class EmChangeProcessorConfiguration {
+  private static final Logger LOGGER = LogManager.getLogger(EmChangeProcessorConfiguration.class);
 
   private final String localDbFilePath;
   private final String sourceDbEnvId;
   private final AuroraDatabaseConfiguration auroraDatabaseConfiguration;
 
-  public AppConfiguration(String localDbFilePath,
-                          String sourceDbEnvId,
-                          AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
+  public EmChangeProcessorConfiguration(String localDbFilePath,
+                                        String sourceDbEnvId,
+                                        AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
     this.localDbFilePath = localDbFilePath;
     this.sourceDbEnvId = sourceDbEnvId;
     this.auroraDatabaseConfiguration = auroraDatabaseConfiguration;
@@ -46,7 +46,7 @@ public class AppConfiguration {
 
     if (o == null || getClass() != o.getClass()) return false;
 
-    AppConfiguration that = (AppConfiguration) o;
+    EmChangeProcessorConfiguration that = (EmChangeProcessorConfiguration) o;
 
     return new EqualsBuilder()
         .append(localDbFilePath, that.localDbFilePath)
@@ -66,7 +66,7 @@ public class AppConfiguration {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", AppConfiguration.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", EmChangeProcessorConfiguration.class.getSimpleName() + "[", "]")
         .add("localDbFilePath='" + localDbFilePath + "'")
         .add("sourceDbEnvId='" + sourceDbEnvId + "'")
         .add("auroraDatabaseConfiguration=" + auroraDatabaseConfiguration)
@@ -107,8 +107,8 @@ public class AppConfiguration {
       return this;
     }
 
-    public AppConfiguration build() {
-      return new AppConfiguration(
+    public EmChangeProcessorConfiguration build() {
+      return new EmChangeProcessorConfiguration(
           localDbFilePath,
           sourceDbEnvId,
           auroraDatabaseConfiguration

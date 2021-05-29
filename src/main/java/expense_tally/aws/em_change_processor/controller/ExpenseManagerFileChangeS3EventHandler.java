@@ -10,8 +10,8 @@ import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.config.ApplicationErrorCode;
 import expense_tally.aws.database.SqlSessionFactory;
 import expense_tally.aws.em_change_processor.S3ExpenseManagerUpdater;
-import expense_tally.aws.em_change_processor.configuration.configuration.AppConfiguration;
-import expense_tally.aws.em_change_processor.configuration.configuration.ConfigurationParser;
+import expense_tally.aws.em_change_processor.configuration.configuration.EmChangeProcessorConfiguration;
+import expense_tally.aws.em_change_processor.configuration.configuration.EmChangeProcessorConfigurationParser;
 import expense_tally.aws.log.ObjectToString;
 import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
@@ -31,7 +31,7 @@ import java.sql.SQLException;
 public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3Event, Void> {
   private static final Logger LOGGER = LogManager.getLogger(ExpenseManagerFileChangeS3EventHandler.class);
   private S3ExpenseManagerUpdater s3ExpenseManagerUpdater;
-  private AppConfiguration appConfiguration;
+  private EmChangeProcessorConfiguration emChangeProcessorConfiguration;
 
   public ExpenseManagerFileChangeS3EventHandler() {
     try {
@@ -54,8 +54,8 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
   private void init() throws SQLException, AppStartUpException, IOException {
     LOGGER.atDebug().log("Initialising application");
     LOGGER.atDebug().log("Reading application configuration.");
-    appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
-    LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", appConfiguration);
+    emChangeProcessorConfiguration = EmChangeProcessorConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+    LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", emChangeProcessorConfiguration);
     s3ExpenseManagerUpdater = assembleS3ExpenseManagerUpdater();
   }
 
@@ -99,22 +99,22 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
   }
 
   private String retrieveAuroraPassword() {
-    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = emChangeProcessorConfiguration.getAuroraDatabaseConfiguration();
     return auroraDatabaseConfiguration.getPassword();
   }
 
   private int retrieveAuroraConnectionTimeout() {
-    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = emChangeProcessorConfiguration.getAuroraDatabaseConfiguration();
     return auroraDatabaseConfiguration.getConnectionTimeout();
   }
 
   private String retrieveAuroraUsername() {
-    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = emChangeProcessorConfiguration.getAuroraDatabaseConfiguration();
     return auroraDatabaseConfiguration.getUsername();
   }
 
   private String retrieveExpenseManagerDatabaseName() throws AppStartUpException {
-    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = emChangeProcessorConfiguration.getAuroraDatabaseConfiguration();
     String databaseName = auroraDatabaseConfiguration.getDatabaseName();
     if (StringUtils.isBlank(databaseName)) {
       throw new AppStartUpException("Expense Manager database name cannot be blank.");
@@ -123,7 +123,7 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
   }
 
   private String retrieveAuroraDatabaseUrl() throws AppStartUpException {
-    AuroraDatabaseConfiguration auroraDatabaseConfiguration = appConfiguration.getAuroraDatabaseConfiguration();
+    AuroraDatabaseConfiguration auroraDatabaseConfiguration = emChangeProcessorConfiguration.getAuroraDatabaseConfiguration();
     String hostUrl = auroraDatabaseConfiguration.getHostUrl();
     if (StringUtils.isBlank(hostUrl)) {
       throw new AppStartUpException("Aurora Database URL cannot be blank.");
@@ -132,7 +132,7 @@ public class ExpenseManagerFileChangeS3EventHandler implements RequestHandler<S3
   }
 
   private String retrieveExpenseManagerFilePath() throws AppStartUpException {
-    String expenseManagerFilePath = appConfiguration.getLocalDbFilePath();
+    String expenseManagerFilePath = emChangeProcessorConfiguration.getLocalDbFilePath();
     if (StringUtils.isBlank(expenseManagerFilePath)) {
       throw new AppStartUpException("Expense Manager File Path cannot be blank.");
     }

@@ -7,18 +7,18 @@ import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 
 import java.util.Optional;
 
-public class ConfigurationParser {
+public class EmChangeProcessorConfigurationParser {
 
   /**
    * Make implicit constructor private as there is no need to initialise class
    */
-  private ConfigurationParser() {
+  private EmChangeProcessorConfigurationParser() {
   }
 
-  public static AppConfiguration parseSystemEnvironmentVariableConfiguration() throws AppStartUpException {
+  public static EmChangeProcessorConfiguration parseSystemEnvironmentVariableConfiguration() throws AppStartUpException {
     AuroraDatabaseConfiguration auroraDatabaseConfiguration =
         AuroraConfigurationParser.parseSystemEnvironmentVariableConfigurations();
-    AppConfiguration.Builder appConfigurationBuilder = new AppConfiguration.Builder(auroraDatabaseConfiguration);
+    EmChangeProcessorConfiguration.Builder appConfigurationBuilder = new EmChangeProcessorConfiguration.Builder(auroraDatabaseConfiguration);
 
     Optional<String> sourceDbFilePath = parseSingleConfiguration(AppConfigEnum.EXPENSE_MANAGER_FILE_PATH.key());
     if (sourceDbFilePath.isPresent()) {

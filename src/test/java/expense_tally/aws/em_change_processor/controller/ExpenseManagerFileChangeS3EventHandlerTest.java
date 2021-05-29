@@ -6,8 +6,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.em_change_processor.S3ExpenseManagerUpdater;
-import expense_tally.aws.em_change_processor.configuration.configuration.AppConfiguration;
-import expense_tally.aws.em_change_processor.configuration.configuration.ConfigurationParser;
+import expense_tally.aws.em_change_processor.configuration.configuration.EmChangeProcessorConfiguration;
+import expense_tally.aws.em_change_processor.configuration.configuration.EmChangeProcessorConfigurationParser;
 import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
@@ -31,7 +31,7 @@ class ExpenseManagerFileChangeS3EventHandlerTest {
   private S3ExpenseManagerUpdater mockS3ExpenseManagerUpdater;
 
   @Mock
-  private AppConfiguration mockAppConfiguration;
+  private EmChangeProcessorConfiguration mockEmChangeProcessorConfiguration;
 
   @Mock
   private AmazonS3 mockAmazonS3;
@@ -43,17 +43,17 @@ class ExpenseManagerFileChangeS3EventHandlerTest {
 
   @BeforeEach
   void setUp() {
-    MockedStatic<ConfigurationParser> mockConfigurationParser = null;
+    MockedStatic<EmChangeProcessorConfigurationParser> mockConfigurationParser = null;
     MockedStatic<AmazonS3ClientBuilder> mockAmazonS3ClientBuilder = null;
-    Mockito.when(mockAppConfiguration.getLocalDbFilePath()).thenReturn("testDbpath");
-    Mockito.when(mockAppConfiguration.getAuroraDatabaseConfiguration()).thenReturn(mockAuroraDatabaseConfiguration);
+    Mockito.when(mockEmChangeProcessorConfiguration.getLocalDbFilePath()).thenReturn("testDbpath");
+    Mockito.when(mockEmChangeProcessorConfiguration.getAuroraDatabaseConfiguration()).thenReturn(mockAuroraDatabaseConfiguration);
     Mockito.when(mockAuroraDatabaseConfiguration.getHostUrl()).thenReturn("testHost");
     Mockito.when(mockAuroraDatabaseConfiguration.getDatabaseName()).thenReturn("testDb");
     MockedStatic<S3ExpenseManagerUpdater> mockS3ExpenseManagerUpdaterStatic = null;
     try {
-      mockConfigurationParser = Mockito.mockStatic(ConfigurationParser.class);
-      mockConfigurationParser.when(ConfigurationParser::parseSystemEnvironmentVariableConfiguration)
-          .thenReturn(mockAppConfiguration);
+      mockConfigurationParser = Mockito.mockStatic(EmChangeProcessorConfigurationParser.class);
+      mockConfigurationParser.when(EmChangeProcessorConfigurationParser::parseSystemEnvironmentVariableConfiguration)
+          .thenReturn(mockEmChangeProcessorConfiguration);
       mockAmazonS3ClientBuilder = Mockito.mockStatic(AmazonS3ClientBuilder.class);
       mockAmazonS3ClientBuilder.when(AmazonS3ClientBuilder::defaultClient).thenReturn(mockAmazonS3);
       mockS3ExpenseManagerUpdaterStatic = Mockito.mockStatic(S3ExpenseManagerUpdater.class);
@@ -77,16 +77,16 @@ class ExpenseManagerFileChangeS3EventHandlerTest {
 
   @Test
   void init_success() {
-    MockedStatic<ConfigurationParser> mockConfigurationParser = null;
+    MockedStatic<EmChangeProcessorConfigurationParser> mockConfigurationParser = null;
     MockedStatic<AmazonS3ClientBuilder> mockAmazonS3ClientBuilder = null;
-    Mockito.when(mockAppConfiguration.getLocalDbFilePath()).thenReturn("testDbpath");
-    Mockito.when(mockAppConfiguration.getAuroraDatabaseConfiguration()).thenReturn(mockAuroraDatabaseConfiguration);
+    Mockito.when(mockEmChangeProcessorConfiguration.getLocalDbFilePath()).thenReturn("testDbpath");
+    Mockito.when(mockEmChangeProcessorConfiguration.getAuroraDatabaseConfiguration()).thenReturn(mockAuroraDatabaseConfiguration);
     Mockito.when(mockAuroraDatabaseConfiguration.getHostUrl()).thenReturn("testHost");
     Mockito.when(mockAuroraDatabaseConfiguration.getDatabaseName()).thenReturn("testDb");
     try {
-      mockConfigurationParser = Mockito.mockStatic(ConfigurationParser.class);
-      mockConfigurationParser.when(ConfigurationParser::parseSystemEnvironmentVariableConfiguration)
-          .thenReturn(mockAppConfiguration);
+      mockConfigurationParser = Mockito.mockStatic(EmChangeProcessorConfigurationParser.class);
+      mockConfigurationParser.when(EmChangeProcessorConfigurationParser::parseSystemEnvironmentVariableConfiguration)
+          .thenReturn(mockEmChangeProcessorConfiguration);
       mockAmazonS3ClientBuilder = Mockito.mockStatic(AmazonS3ClientBuilder.class);
       mockAmazonS3ClientBuilder.when(AmazonS3ClientBuilder::defaultClient).thenReturn(mockAmazonS3);
       assertThat(new ExpenseManagerFileChangeS3EventHandler())

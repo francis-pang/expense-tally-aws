@@ -9,8 +9,8 @@ import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.config.ApplicationErrorCode;
 import expense_tally.aws.csv_reader.BankTransactionReader;
-import expense_tally.aws.csv_reader.configuration.AppConfiguration;
-import expense_tally.aws.csv_reader.configuration.ConfigurationParser;
+import expense_tally.aws.csv_reader.configuration.CsvReaderConfiguration;
+import expense_tally.aws.csv_reader.configuration.CsvReaderConfigurationParser;
 import expense_tally.aws.database.SqlSessionFactory;
 import expense_tally.aws.log.ObjectToString;
 import expense_tally.aws.s3.S3FileRetriever;
@@ -29,7 +29,7 @@ public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void
   private static final Logger LOGGER = LogManager.getLogger(CsvFileChangeS3EventHandler.class);
 
   private BankTransactionReader bankTransactionReader;
-  private AppConfiguration appConfiguration;
+  private CsvReaderConfiguration csvReaderConfiguration;
 
   public CsvFileChangeS3EventHandler() {
     try {
@@ -52,8 +52,8 @@ public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void
   private void init() throws AppStartUpException, IOException, SQLException {
     LOGGER.atDebug().log("Initialising application");
     LOGGER.atDebug().log("Reading application configuration.");
-    appConfiguration = ConfigurationParser.parseSystemEnvironmentVariableConfiguration();
-    LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", appConfiguration);
+    csvReaderConfiguration = CsvReaderConfigurationParser.parseSystemEnvironmentVariableConfiguration();
+    LOGGER.atDebug().log("Application configuration is loaded. appConfiguration:{}", csvReaderConfiguration);
     S3FileRetriever s3FileRetriever = assembleS3FileRetriever();
     ExpenseReadable expenseReadable = assembleExpenseReadable();
     File csvFile = retrieveCsvFile();
@@ -80,7 +80,7 @@ public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void
   }
 
   private File retrieveCsvFile() {
-    return appConfiguration.getCsvFile();
+    return csvReaderConfiguration.getCsvFile();
   }
 
   private ExpenseReadable assembleExpenseReadable() throws IOException, SQLException {
@@ -96,6 +96,6 @@ public class CsvFileChangeS3EventHandler implements RequestHandler<S3Event, Void
   }
 
   private AuroraDatabaseConfiguration retrieveAuroraDatabaseConfiguration() {
-    return appConfiguration.getAuroraDatabaseConfiguration();
+    return csvReaderConfiguration.getAuroraDatabaseConfiguration();
   }
 }

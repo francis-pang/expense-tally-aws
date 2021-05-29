@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
-class AuroraConfigurationParserTest {
+class AuroraCsvReaderEmChangeProcessorConfigurationParserTest {
   @Test
   void parseSystemEnvironmentVariableConfigurations_allFilled() throws AppStartUpException {
     try (MockedStatic<SystemProxy> mockSystemProxy = Mockito.mockStatic(SystemProxy.class)) {

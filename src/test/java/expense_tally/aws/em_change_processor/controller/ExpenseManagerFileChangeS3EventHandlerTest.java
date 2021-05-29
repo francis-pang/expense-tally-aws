@@ -2,7 +2,6 @@ package expense_tally.aws.em_change_processor.controller;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
@@ -23,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

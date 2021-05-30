@@ -6,8 +6,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
 import expense_tally.aws.em_change_processor.S3ExpenseManagerUpdater;
-import expense_tally.aws.em_change_processor.configuration.configuration.EmChangeProcessorConfiguration;
-import expense_tally.aws.em_change_processor.configuration.configuration.EmChangeProcessorConfigurationParser;
+import expense_tally.aws.em_change_processor.configuration.EmChangeProcessorConfiguration;
+import expense_tally.aws.em_change_processor.configuration.EmChangeProcessorConfigurationParser;
 import expense_tally.aws.s3.S3FileRetriever;
 import expense_tally.expense_manager.persistence.ExpenseReportReadable;
 import expense_tally.expense_manager.persistence.ExpenseUpdatable;
@@ -102,10 +102,12 @@ class ExpenseManagerFileChangeS3EventHandlerTest {
   }
 
   @Test
-  void handleRequest_noRecordInEvent() {
+  void handleRequest_noRecordInEvent() throws SQLException, IOException {
     S3Event mockEmFileChangeEvent = Mockito.mock(S3Event.class);
     Context mockContext = Mockito.mock(Context.class);
     expenseManagerFileChangeS3EventHandler.handleRequest(mockEmFileChangeEvent, mockContext);
+    assertThat(expenseManagerFileChangeS3EventHandler.handleRequest(mockEmFileChangeEvent, mockContext))
+        .isNull();
   }
 
   @Test
@@ -114,6 +116,8 @@ class ExpenseManagerFileChangeS3EventHandlerTest {
     Context mockContext = Mockito.mock(Context.class);
     Mockito.doThrow(new IOException("test IOException"))
         .when(mockS3ExpenseManagerUpdater).updateExpenseManager(mockEmFileChangeEvent);
-    expenseManagerFileChangeS3EventHandler.handleRequest(mockEmFileChangeEvent, mockContext);
+    assertThat(expenseManagerFileChangeS3EventHandler.handleRequest(mockEmFileChangeEvent, mockContext))
+        .isNull();
+    Mockito.verify(mockS3ExpenseManagerUpdater, Mockito.atMostOnce()).updateExpenseManager(mockEmFileChangeEvent);
   }
 }

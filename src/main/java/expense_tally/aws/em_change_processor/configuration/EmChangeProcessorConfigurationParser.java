@@ -1,9 +1,10 @@
-package expense_tally.aws.em_change_processor.configuration.configuration;
+package expense_tally.aws.em_change_processor.configuration;
 
 import expense_tally.aws.AppConfigEnum;
 import expense_tally.aws.AppStartUpException;
 import expense_tally.aws.aurora.AuroraConfigurationParser;
 import expense_tally.aws.aurora.AuroraDatabaseConfiguration;
+import expense_tally.aws.config.SystemProxy;
 
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class EmChangeProcessorConfigurationParser {
   }
 
   private static Optional<String> parseSingleConfiguration(String keyName) {
-    String nullableValue = System.getenv(keyName);
+    String nullableValue = SystemProxy.getEnvironmentVariable(keyName);
     return Optional.ofNullable(nullableValue);
   }
 }

@@ -5,17 +5,27 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.File;
+import java.net.URI;
+import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ *
+ */
 public class CsvReaderConfiguration {
-  private static final String DEFAULT_CSV_FILE_PATH = "/tmp/transaction.csv";
+  private static final String DEFAULT_CSV_FILE_PATH = URI.create("/tmp/transaction.csv").getPath();
 
   private final File csvFile;
   private final AuroraDatabaseConfiguration auroraDatabaseConfiguration;
 
+  /**
+   * Private constructor for static factory method design pattern
+   * @param csvFile the csv file
+   * @param auroraDatabaseConfiguration database configuration of the Aurora database
+   */
   private CsvReaderConfiguration(File csvFile, AuroraDatabaseConfiguration auroraDatabaseConfiguration) {
-    this.csvFile = csvFile;
-    this.auroraDatabaseConfiguration = auroraDatabaseConfiguration;
+    this.csvFile = Objects.requireNonNull(csvFile);
+    this.auroraDatabaseConfiguration = Objects.requireNonNull(auroraDatabaseConfiguration);
   }
 
   public File getCsvFile() {
@@ -39,9 +49,13 @@ public class CsvReaderConfiguration {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
+    if (this == o) {
+      return true;
+    }
 
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     CsvReaderConfiguration that = (CsvReaderConfiguration) o;
 
